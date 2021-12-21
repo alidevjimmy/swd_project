@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package user;
+
+option go_package = "/userpb";
+option csharp_namespace = "GrpcServer";
+
+service UserService {
+    // Errors: Internal , NotFound
+    rpc Login(LoginRequest) returns (LoginResponse) {};
+    // Errors: Internal
+    rpc StoreNewToken(StoreNewTokenRequest) returns (StoreNewTokenResponse) {}; 
+}
+
+message User {
+    int32 id = 1;
+    string full_name = 2;
+    string phone = 3;
+    string password = 4;
+}
+
+message LoginRequest {
+    string phone = 1;
+    string password = 2;
+}
+
+message LoginResponse {
+    User user = 1;
+}
+
+message StoreNewTokenRequest {
+    int32 user_id = 1;
+    string token = 2;
+}
+
+message StoreNewTokenResponse {
+    string result = 1;
+}
+
+message GetUserLogsRequest {
+    // not implemented
+}
+
+message GetUserLogsResponse {
+    // not implemented
+}

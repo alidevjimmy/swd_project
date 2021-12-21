@@ -1,0 +1,139 @@
+syntax = "proto3";
+
+package report;
+
+option go_package = "/reportpb";
+option csharp_namespace = "GrpcServer";
+
+
+service ReportService {
+    // create new record perhaps by sensor or a person
+    // Errors: Internal
+    rpc CreateReport (SensorReportRequest) returns (SensorReportResponse) {};
+    // get report information by id
+    rpc GetReport (GetReportRequest) returns (GetReportResponse) {} ;
+    // get all uncompleted reports by server streaming technique
+    rpc GetUnCompletedReports (GetUnCompletedReportsRequest) returns (GetUnCompletedReportsResponse) {} ;
+    // get all logs which are relevant to specified report with "id"
+    rpc GetReportLogs (GetReportLogRequest) returns (GetReportLogResponse) {};
+    // Errors: Internal
+    rpc GetAllLogs (GetAllLogsRequest) returns (GetAllLogsResponse) {};
+    // Errors: NotFound, Internal
+    rpc DoReportCommand(DoReportCommandRequest) returns (DoReportCommandResponse) {};
+    rpc GetSensorReports(GetSensorReportsRequest) returns (GetSensorReportsResponse) {}
+    rpc GetSensorsReportsCount(GetSensorsReportsCountRequest) returns (GetSensorsReportsCountResponse) {};
+}
+
+
+message Report {
+    string id = 1;
+    int32 fault_id = 2;
+    int32 sensor_id = 3;
+    enum Status {
+        Default = 0;
+        LOW = 1;
+        MEDIUM = 2;
+        HIGH = 3;
+    }
+    // if not specified => field will be LOW (1)
+    Status status = 4;
+    repeated string tags = 5;
+    // if sensor is creator of the report then user_id will be 0
+    // otherwise user_id has value
+    int32 user_id = 6;
+    // these feilds are not needed for requests
+    string created_at = 7; 
+    string updated_at = 8;
+    repeated Command commands = 9;
+    
+}
+
+message ReportLog {
+    // CREATE, UPDATE, DELETE
+    string operation = 1;
+    int32 user_id = 2;
+    string report_id = 3;
+    int32 sendsor_id = 4;
+    string description = 5;
+    // not needed for requests
+    string created_at = 6; 
+}
+
+message Command {
+    int32 command_id = 1;
+    // FIRE, ELECTICY, ...
+    string title = 2;
+    // is manual or auto  
+    bool Auto = 3;
+    bool Done = 4;
+}
+
+message SensorReportRequest {
+    Report report = 1;
+}
+
+message SensorReportResponse {
+    Report Report = 1;
+}
+
+message GetReportRequest {
+    string report_id = 1;
+}
+
+message GetReportResponse {
+    Report report = 1;
+}
+
+message GetUnCompletedReportsRequest {
+
+}
+
+message GetUnCompletedReportsResponse {
+    repeated Report report = 1;
+}
+
+message GetReportLogRequest {
+    string report_id = 1;
+}
+
+message GetReportLogResponse {
+    repeated ReportLog report_log = 1;
+}
+
+message GetAllLogsRequest {
+
+}
+message GetAllLogsResponse {
+    repeated ReportLog report_log = 1;
+}
+
+message DoReportCommandRequest {
+    string report_id = 1;
+    int32 command_id = 2;
+}
+
+message DoReportCommandResponse {
+    string result = 1;
+}
+
+
+
+message GetSensorReportsRequest {
+    int32 sensor_id = 1;
+}
+
+message GetSensorReportsResponse {
+    repeated Report reports = 1;
+}
+
+message GetSensorsReportsCountRequest {
+    
+}
+
+message GetSensorsReportsCountResponse {
+    message SensorIdWithReportCount {
+        int32 sensor_id = 1;
+        int32 count = 2;
+    }
+    repeated SensorIdWithReportCount sensorIdWithReportCount = 1;
+}
