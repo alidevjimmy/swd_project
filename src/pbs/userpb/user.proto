@@ -2,21 +2,37 @@ syntax = "proto3";
 
 package user;
 
+import "src/pbs/timestamp.proto";
+
+
 option go_package = "/userpb";
 option csharp_namespace = "GrpcServer";
 
 service UserService {
-    // Errors: Internal , NotFound
+    // Errors: INTERNAL , NOT_FOUND
     rpc Login(LoginRequest) returns (LoginResponse) {};
-    // Errors: Internal
-    rpc StoreNewToken(StoreNewTokenRequest) returns (StoreNewTokenResponse) {}; 
+    // Errors: INTERNAL, INVALID_ARGUMENT -> "occurs when user with same phone number is exists"
+    rpc Register(RegisterRequest) returns (RegisterResponse) {};
+    // Errors: INTERNAL, NOT_FOUND
+    rpc FindUser(FindUserRequest) returns (FindUserResponse) {};
+    // Errors: INTERNAL
+    // editing unique fields like "phone" is not allowed
+    // user should send his/her current password, in order to get permission for edit
+    rpc EditUser(EditUserRequest) returns (EditUserResponse) {};
+    // only swaping status from "RED" to "GREEN" is allowed
+    // Errors: INTERNAL, NOT_FOUND (user not found)
+    rpc SwapStatus(SwapStatusRequest) returns (SwapStatusResponse) {};
 }
 
 message User {
     int32 id = 1;
-    string full_name = 2;
-    string phone = 3;
-    string password = 4;
+    string phone = 2;
+    string name = 3;
+    string family = 4;
+    string NationalCode  = 5;
+    string password = 6;
+    UserStatus UserStatus = 7;
+    google.protobuf.Timestamp birth = 8;
 }
 
 message LoginRequest {
@@ -28,19 +44,46 @@ message LoginResponse {
     User user = 1;
 }
 
-message StoreNewTokenRequest {
+enum UserStatus {
+    DEFAULT = 0;
+    GREEN = 1;
+    RED = 2;
+}
+
+message RegisterRequest {
+    string phone = 1;
+    string name = 2;
+    string family = 3;
+    string NationalCode  = 4;
+    string password = 5;
+    UserStatus UserStatus = 6;
+    google.protobuf.Timestamp birth = 7;
+}
+
+message RegisterResponse {
+    User user = 1;
+}
+
+message FindUserRequest {
+    int32 id = 1;
+}
+
+message FindUserResponse {
+    User user = 1;
+}
+
+message EditUserRequest {
+    User user = 1;
+}
+
+message EditUserResponse {
+    User user = 1;
+}
+
+message SwapStatusRequest {
     int32 user_id = 1;
-    string token = 2;
 }
 
-message StoreNewTokenResponse {
-    string result = 1;
-}
-
-message GetUserLogsRequest {
-    // not implemented
-}
-
-message GetUserLogsResponse {
-    // not implemented
+message SwapStatusResponse {
+    User user = 1;
 }

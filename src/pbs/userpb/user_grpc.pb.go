@@ -18,10 +18,10 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserServiceClient interface {
-	// Errors: Internal , NotFound
+	// Errors: INTERNAL , NOT_FOUND
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
-	// Errors: Internal
-	StoreNewToken(ctx context.Context, in *StoreNewTokenRequest, opts ...grpc.CallOption) (*StoreNewTokenResponse, error)
+	// Errors: INTERNAL, INVALID_ARGUMENT -> "occurs when user with same phone number is exists"
+	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
 }
 
 type userServiceClient struct {
@@ -41,9 +41,9 @@ func (c *userServiceClient) Login(ctx context.Context, in *LoginRequest, opts ..
 	return out, nil
 }
 
-func (c *userServiceClient) StoreNewToken(ctx context.Context, in *StoreNewTokenRequest, opts ...grpc.CallOption) (*StoreNewTokenResponse, error) {
-	out := new(StoreNewTokenResponse)
-	err := c.cc.Invoke(ctx, "/user.UserService/StoreNewToken", in, out, opts...)
+func (c *userServiceClient) Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error) {
+	out := new(RegisterResponse)
+	err := c.cc.Invoke(ctx, "/user.UserService/Register", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -54,10 +54,10 @@ func (c *userServiceClient) StoreNewToken(ctx context.Context, in *StoreNewToken
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
 type UserServiceServer interface {
-	// Errors: Internal , NotFound
+	// Errors: INTERNAL , NOT_FOUND
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
-	// Errors: Internal
-	StoreNewToken(context.Context, *StoreNewTokenRequest) (*StoreNewTokenResponse, error)
+	// Errors: INTERNAL, INVALID_ARGUMENT -> "occurs when user with same phone number is exists"
+	Register(context.Context, *RegisterRequest) (*RegisterResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -68,8 +68,8 @@ type UnimplementedUserServiceServer struct {
 func (UnimplementedUserServiceServer) Login(context.Context, *LoginRequest) (*LoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
 }
-func (UnimplementedUserServiceServer) StoreNewToken(context.Context, *StoreNewTokenRequest) (*StoreNewTokenResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method StoreNewToken not implemented")
+func (UnimplementedUserServiceServer) Register(context.Context, *RegisterRequest) (*RegisterResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Register not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -102,20 +102,20 @@ func _UserService_Login_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserService_StoreNewToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(StoreNewTokenRequest)
+func _UserService_Register_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RegisterRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserServiceServer).StoreNewToken(ctx, in)
+		return srv.(UserServiceServer).Register(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/user.UserService/StoreNewToken",
+		FullMethod: "/user.UserService/Register",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).StoreNewToken(ctx, req.(*StoreNewTokenRequest))
+		return srv.(UserServiceServer).Register(ctx, req.(*RegisterRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -132,8 +132,8 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _UserService_Login_Handler,
 		},
 		{
-			MethodName: "StoreNewToken",
-			Handler:    _UserService_StoreNewToken_Handler,
+			MethodName: "Register",
+			Handler:    _UserService_Register_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

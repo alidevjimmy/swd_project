@@ -2,10 +2,10 @@ package server
 
 import (
 	"context"
-	"esme_team/src/db/postgresdb"
-	"esme_team/src/model"
-	"esme_team/src/pbs/userpb"
 	"fmt"
+	"swd_project/src/db/postgresdb"
+	"swd_project/src/model"
+	"swd_project/src/pbs/userpb"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -16,7 +16,7 @@ type UserServer struct {
 }
 
 func (*UserServer) Login(ctx context.Context, req *userpb.LoginRequest) (*userpb.LoginResponse, error) {
-	var user model.UserModel
+	var user model.User
 	if err := postgresdb.DB.Where("phone = ? AND password = ?", req.Phone, req.Password).Find(&user).Error; err != nil {
 		return nil, status.Errorf(
 			codes.Internal,
@@ -31,26 +31,9 @@ func (*UserServer) Login(ctx context.Context, req *userpb.LoginRequest) (*userpb
 	}
 	return &userpb.LoginResponse{
 		User: &userpb.User{
-			Id:       int32(user.ID),
-			FullName: user.FullName,
+			Id:       int32(user.Model.ID),
+			FullName: user.Name,
 			Phone:    user.Phone,
 		},
-	}, nil
-}
-
-
-func (*UserServer) StoreNewToken(ctx context.Context, req *userpb.StoreNewTokenRequest) (*userpb.StoreNewTokenResponse, error) {
-	model := &model.TokenModel{
-		Token:  req.GetToken(),
-		UserID: uint(req.GetUserId()),
-	}
-	if err := postgresdb.DB.Create(&model).Error; err != nil {
-		return nil, status.Errorf(
-			codes.Internal,
-			fmt.Sprintf("error while storing data to database : %v", err),
-		)
-	}
-	return &userpb.StoreNewTokenResponse{
-		Result: "توکن با موفقیت افزوده شد",
 	}, nil
 }

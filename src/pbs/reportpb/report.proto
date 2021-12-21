@@ -2,138 +2,47 @@ syntax = "proto3";
 
 package report;
 
+import "src/pbs/timestamp.proto";
+
 option go_package = "/reportpb";
 option csharp_namespace = "GrpcServer";
 
-
 service ReportService {
-    // create new record perhaps by sensor or a person
-    // Errors: Internal
-    rpc CreateReport (SensorReportRequest) returns (SensorReportResponse) {};
-    // get report information by id
-    rpc GetReport (GetReportRequest) returns (GetReportResponse) {} ;
-    // get all uncompleted reports by server streaming technique
-    rpc GetUnCompletedReports (GetUnCompletedReportsRequest) returns (GetUnCompletedReportsResponse) {} ;
-    // get all logs which are relevant to specified report with "id"
-    rpc GetReportLogs (GetReportLogRequest) returns (GetReportLogResponse) {};
-    // Errors: Internal
-    rpc GetAllLogs (GetAllLogsRequest) returns (GetAllLogsResponse) {};
-    // Errors: NotFound, Internal
-    rpc DoReportCommand(DoReportCommandRequest) returns (DoReportCommandResponse) {};
-    rpc GetSensorReports(GetSensorReportsRequest) returns (GetSensorReportsResponse) {}
-    rpc GetSensorsReportsCount(GetSensorsReportsCountRequest) returns (GetSensorsReportsCountResponse) {};
+    // Errors: INTERNALE
+    // when new report created, the status of user becomes "RED"
+    rpc CreateReport(CreateReportRequest) returns (CreateReportResponse) {};
+    // returns user's open reports by user_id
+    // Errors: INTERNAL, NOT_FOUND (user not_found)
+    rpc UserOpenReports(UserOpenReportsRequest) returns (UserOpenReportsResponse) {};
 }
 
-
+// there are 2 types of reports
+// 1. user currenty is in danger
+// in this case "long", "lat" should be send and "address", "until" fields are not allowed
+// "until" field will set as current time automaticaly
+// 2. user thinks he will be in danger if he didn't changed his status to "GREEN"
+// in this case "address" and "until" are neccesury fields and "long","lat" are not allowed
 message Report {
-    string id = 1;
-    int32 fault_id = 2;
-    int32 sensor_id = 3;
-    enum Status {
-        Default = 0;
-        LOW = 1;
-        MEDIUM = 2;
-        HIGH = 3;
-    }
-    // if not specified => field will be LOW (1)
-    Status status = 4;
-    repeated string tags = 5;
-    // if sensor is creator of the report then user_id will be 0
-    // otherwise user_id has value
-    int32 user_id = 6;
-    // these feilds are not needed for requests
-    string created_at = 7; 
-    string updated_at = 8;
-    repeated Command commands = 9;
-    
+    string subject = 1;
+    int32 long = 2;
+    int32 lat = 3;
+    string address = 4;
+    int32 user_id = 5;
+    google.protobuf.Timestamp until = 6;
 }
 
-message ReportLog {
-    // CREATE, UPDATE, DELETE
-    string operation = 1;
-    int32 user_id = 2;
-    string report_id = 3;
-    int32 sendsor_id = 4;
-    string description = 5;
-    // not needed for requests
-    string created_at = 6; 
-}
-
-message Command {
-    int32 command_id = 1;
-    // FIRE, ELECTICY, ...
-    string title = 2;
-    // is manual or auto  
-    bool Auto = 3;
-    bool Done = 4;
-}
-
-message SensorReportRequest {
+message CreateReportRequest {
     Report report = 1;
 }
 
-message SensorReportResponse {
-    Report Report = 1;
-}
-
-message GetReportRequest {
-    string report_id = 1;
-}
-
-message GetReportResponse {
+message CreateReportResponse {
     Report report = 1;
 }
 
-message GetUnCompletedReportsRequest {
-
+message UserOpenReportsRequest {
+    int32 user_id = 1;
 }
 
-message GetUnCompletedReportsResponse {
-    repeated Report report = 1;
-}
-
-message GetReportLogRequest {
-    string report_id = 1;
-}
-
-message GetReportLogResponse {
-    repeated ReportLog report_log = 1;
-}
-
-message GetAllLogsRequest {
-
-}
-message GetAllLogsResponse {
-    repeated ReportLog report_log = 1;
-}
-
-message DoReportCommandRequest {
-    string report_id = 1;
-    int32 command_id = 2;
-}
-
-message DoReportCommandResponse {
-    string result = 1;
-}
-
-
-
-message GetSensorReportsRequest {
-    int32 sensor_id = 1;
-}
-
-message GetSensorReportsResponse {
+message UserOpenReportsResponse {
     repeated Report reports = 1;
-}
-
-message GetSensorsReportsCountRequest {
-    
-}
-
-message GetSensorsReportsCountResponse {
-    message SensorIdWithReportCount {
-        int32 sensor_id = 1;
-        int32 count = 2;
-    }
-    repeated SensorIdWithReportCount sensorIdWithReportCount = 1;
 }

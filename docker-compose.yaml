@@ -24,8 +24,6 @@ services:
 networks: 
   pgnet:
     driver: bridge
-  mongonet:
-    driver: bridge
 volumes: 
   pgdata:
   pgadmindata:
