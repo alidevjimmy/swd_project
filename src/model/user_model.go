@@ -6,11 +6,11 @@ import (
 	"gorm.io/gorm"
 )
 
-type UserStatus string
+type UserStatus int32
 
 const (
-	Green UserStatus = "GREEN"
-	Red   UserStatus = "RED"
+	Green UserStatus = 1
+	Red   UserStatus = 2
 )
 
 type User struct {
@@ -21,5 +21,5 @@ type User struct {
 	NationalCode string     `gorm:"column:national_code;type:varchar(255)"`
 	Password     string     `gorm:"column:password;not null;type:varchar(255)"`
 	Birth        time.Time  `gorm:"column:birth;not null;type:timestamp"`
-	Status       UserStatus `gorm:"column:status;not null;type:varchar(255);default:GREEN"`
+	Status       UserStatus `gorm:"column:status;not null;type:integer"`
 }

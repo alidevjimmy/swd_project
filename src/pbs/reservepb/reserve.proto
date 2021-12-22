@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package reserve;
+
+option go_package = "/reservepb";
+option csharp_namespace = "GrpcServer";
+
+service ReserveService {
+    // reserve time is not flexible and fixed at 1 hour
+    rpc ReserveOneHour (ReserveOneHourRequest) returns (ReserveOneHourResponse) {};
+    // FindAllUserReserves only returns reserves which are not exceeded 
+    rpc FindAllUserReserves (FindAllUserReservesRequest) returns (FindAllUserReservesResponse) {};
+    // FindAllConsultantReserves only returns reserves which are not exceeded 
+    rpc FindAllConsultantReserves (FindAllConsultantReservesRequest) returns (FindAllConsultantReservesResponse) {};
+}
+
+message Reserve {
+    int32 hour = 1;
+    int32 user_id = 2;
+    int32 schudule_id = 3;
+}
+
+message ReserveOneHourRequest {
+    Reserve reserve = 1;
+}
+
+message ReserveOneHourResponse {
+    Reserve reserve = 1;
+}
+
+message FindAllUserReservesRequest {
+    int32 user_id = 1;
+}
+
+message FindAllUserReservesResponse {
+    repeated Reserve reserve = 1;
+}
+
+message FindAllConsultantReservesRequest {
+    int32 consultant_id = 1;
+}
+
+message FindAllConsultantReservesResponse {
+    repeated Reserve reserve = 1;
+}

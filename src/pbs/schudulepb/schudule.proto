@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package schudule;
+
+import "src/pbs/timestamp.proto";
+
+option go_package = "/schudulepb";
+option csharp_namespace = "GrpcServer";
+
+service SchuduleService {
+    rpc CreateSchudule(CreateSchuduleRequest) returns (CreateSchuduleResponse) {};
+    // times that reserved won't return
+    rpc FindAllOpenSchudules(FindAllOpenSchudulesRequest) returns (FindAllOpenSchudulesResponse) {}; 
+    // times that reserved won't return
+    rpc FindConsultantOpenSchudules(FindConsultantOpenSchudulesRequest) returns (FindConsultantOpenSchudulesResponse) {};
+}
+
+message Schudule {
+    int32 id = 1;
+    google.protobuf.Timestamp date = 2;
+    int32 start_hour = 3;
+    int32 finish_hour = 4;
+    int32 consultant_id = 5;
+}
+
+message CreateSchuduleRequest {
+    Schudule schudule = 1;
+}
+
+message CreateSchuduleResponse {
+    Schudule schudule = 1;
+}
+
+message FindAllOpenSchudulesRequest {
+
+}
+
+message FindAllOpenSchudulesResponse {
+    repeated Schudule schudules = 1;
+}
+
+message FindConsultantOpenSchudulesRequest {
+    int32 consultant_id = 1;
+}
+
+message FindConsultantOpenSchudulesResponse {
+    repeated Schudule schudules = 1;
+}

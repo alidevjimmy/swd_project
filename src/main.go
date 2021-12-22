@@ -26,7 +26,7 @@ func main() {
 	fmt.Println("Server is running...")
 
 	postgresdb.PostgresInit()
-	if err := postgresdb.DB.AutoMigrate(&model.User{}, &model.Consultant{}, &model.Report{}, &model.Schudule{}, &model.Reserve{}); err != nil {
+	if err := postgresdb.DB.AutoMigrate(&model.User{}, &model.Consultant{}, &model.Report{}, &model.Schudule{}, &model.Reserve{}, &model.Center{}); err != nil {
 		log.Fatalf("error while AutoMigrate : %v", err)
 	}
 

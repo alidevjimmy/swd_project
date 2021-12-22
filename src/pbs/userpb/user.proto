@@ -11,7 +11,7 @@ option csharp_namespace = "GrpcServer";
 service UserService {
     // Errors: INTERNAL , NOT_FOUND
     rpc Login(LoginRequest) returns (LoginResponse) {};
-    // Errors: INTERNAL, INVALID_ARGUMENT -> "occurs when user with same phone number is exists"
+    // Errors: INTERNAL, ALREADY_EXISISTS -> "occurs when user with same phone number is exists"
     rpc Register(RegisterRequest) returns (RegisterResponse) {};
     // Errors: INTERNAL, NOT_FOUND
     rpc FindUser(FindUserRequest) returns (FindUserResponse) {};
