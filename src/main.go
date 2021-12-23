@@ -10,6 +10,7 @@ import (
 	"swd_project/src/db/postgresdb"
 	"swd_project/src/model"
 	"swd_project/src/pbs/centerpb"
+	"swd_project/src/pbs/consultantpb"
 	"swd_project/src/pbs/userpb"
 	"swd_project/src/server"
 
@@ -50,4 +51,5 @@ func main() {
 func serviceRegistry(s *grpc.Server) {
 	userpb.RegisterUserServiceServer(s, &server.UserServer{})
 	centerpb.RegisterCenterServiceServer(s, &server.CenterServer{})
+	consultantpb.RegisterConsultantServiceServer(s, &server.ConsultantServer{})
 }
