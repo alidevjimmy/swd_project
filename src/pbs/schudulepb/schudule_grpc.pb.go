@@ -18,6 +18,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type SchuduleServiceClient interface {
+	// consultant can create batch of schudules
 	CreateSchudule(ctx context.Context, in *CreateSchuduleRequest, opts ...grpc.CallOption) (*CreateSchuduleResponse, error)
 	// times that reserved won't return
 	FindAllOpenSchudules(ctx context.Context, in *FindAllOpenSchudulesRequest, opts ...grpc.CallOption) (*FindAllOpenSchudulesResponse, error)
@@ -64,6 +65,7 @@ func (c *schuduleServiceClient) FindConsultantOpenSchudules(ctx context.Context,
 // All implementations must embed UnimplementedSchuduleServiceServer
 // for forward compatibility
 type SchuduleServiceServer interface {
+	// consultant can create batch of schudules
 	CreateSchudule(context.Context, *CreateSchuduleRequest) (*CreateSchuduleResponse, error)
 	// times that reserved won't return
 	FindAllOpenSchudules(context.Context, *FindAllOpenSchudulesRequest) (*FindAllOpenSchudulesResponse, error)

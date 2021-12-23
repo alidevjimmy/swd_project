@@ -12,6 +12,7 @@ import (
 	"swd_project/src/pbs/centerpb"
 	"swd_project/src/pbs/consultantpb"
 	"swd_project/src/pbs/reportpb"
+	"swd_project/src/pbs/schudulepb"
 	"swd_project/src/pbs/userpb"
 	"swd_project/src/server"
 
@@ -54,4 +55,5 @@ func serviceRegistry(s *grpc.Server) {
 	centerpb.RegisterCenterServiceServer(s, &server.CenterServer{})
 	consultantpb.RegisterConsultantServiceServer(s, &server.ConsultantServer{})
 	reportpb.RegisterReportServiceServer(s, &server.ReportServer{})
+	schudulepb.RegisterSchuduleServiceServer(s, &server.SchuduleServer{})
 }

@@ -8,6 +8,7 @@ option go_package = "/schudulepb";
 option csharp_namespace = "GrpcServer";
 
 service SchuduleService {
+    // consultant can create batch of schudules
     rpc CreateSchudule(CreateSchuduleRequest) returns (CreateSchuduleResponse) {};
     // times that reserved won't return
     rpc FindAllOpenSchudules(FindAllOpenSchudulesRequest) returns (FindAllOpenSchudulesResponse) {}; 
@@ -20,15 +21,16 @@ message Schudule {
     google.protobuf.Timestamp date = 2;
     int32 start_hour = 3;
     int32 finish_hour = 4;
-    int32 consultant_id = 5;
+    int32 consultant_id = 5; // not important for create operation
 }
 
 message CreateSchuduleRequest {
-    Schudule schudule = 1;
+    repeated Schudule schudules = 1;
+    int32 consultant_id = 2;
 }
 
 message CreateSchuduleResponse {
-    Schudule schudule = 1;
+    repeated Schudule schudules = 1;
 }
 
 message FindAllOpenSchudulesRequest {

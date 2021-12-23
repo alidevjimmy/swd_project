@@ -45,6 +45,13 @@ func (*ReportServer) CreateReport(ctx context.Context, req *reportpb.CreateRepor
 			fmt.Sprintf("خطا هنگام ایجاد گزارش"),
 		)
 	}
+	user.Status = model.Red
+	if err := postgresdb.DB.Save(&user).Error; err != nil {
+		return nil, status.Errorf(
+			codes.Internal,
+			fmt.Sprintf("خطا هنگاه بروزرسانی وضعیت کاربر"),
+		)
+	}
 	until := timestamppb.New(report.Until)
 	return &reportpb.CreateReportResponse{
 		Report: &reportpb.Report{
