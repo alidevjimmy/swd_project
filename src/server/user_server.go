@@ -181,6 +181,25 @@ func (*UserServer) SwapStatus(ctx context.Context, req *userpb.SwapStatusRequest
 			fmt.Sprintf("خطا هنگاه بروزرسانی وضعیت کاربر"),
 		)
 	}
-	// set active field for all reports as FALSE
-	return nil, nil
+	// deactivate all reports which belongs to user
+	var report model.Report
+	if err := postgresdb.DB.Where("user_id = ? AND active = ?", req.GetUserId(), "true").Find(&report).Update("active", "false").Error; err != nil {
+		return nil, status.Errorf(
+			codes.Internal,
+			fmt.Sprintf("خطا هنگاه بروزرسانی گزارشات کاربر"),
+		)
+	}
+
+	birth := timestamppb.New(user.Birth)
+	return &userpb.SwapStatusResponse{
+		User: &userpb.User{
+			Id:           int32(user.Model.ID),
+			Name:         user.Name,
+			Family:       user.Family,
+			Phone:        user.Phone,
+			NationalCode: user.NationalCode,
+			UserStatus:   userpb.UserStatus(user.Status),
+			Birth:        birth,
+		},
+	}, nil
 }
