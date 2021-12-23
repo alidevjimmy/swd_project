@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package schudule;
 
-import "src/pbs/timestamp.proto";
+import "google/protobuf/timestamp.proto";
 
 option go_package = "/schudulepb";
 option csharp_namespace = "GrpcServer";

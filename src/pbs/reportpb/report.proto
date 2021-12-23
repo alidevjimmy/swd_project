@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package report;
 
-import "src/pbs/timestamp.proto";
+import "google/protobuf/timestamp.proto";
 
 option go_package = "/reportpb";
 option csharp_namespace = "GrpcServer";

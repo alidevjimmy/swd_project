@@ -9,7 +9,7 @@ import (
 type UserStatus int32
 
 const (
-	Green UserStatus = 1
+	Green UserStatus = 1	
 	Red   UserStatus = 2
 )
 

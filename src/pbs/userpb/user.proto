@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package user;
 
-import "src/pbs/timestamp.proto";
+import "google/protobuf/timestamp.proto";
 
 
 option go_package = "/userpb";
@@ -18,9 +18,12 @@ service UserService {
     // Errors: INTERNAL
     // editing unique fields like "phone" is not allowed
     // user should send his/her current password, in order to get permission for edit
+    // for updating password you need to send new password through "password" which is located in "User" message.
+    // and it's essential to send current password of user 
+    // editing "phone" is not allowed
     rpc EditUser(EditUserRequest) returns (EditUserResponse) {};
     // only swaping status from "RED" to "GREEN" is allowed
-    // Errors: INTERNAL, NOT_FOUND (user not found)
+    // Errors: INTERNAL, PERMISSION_DENIED (user status is not RED), NOT_FOUND (user not found)
     rpc SwapStatus(SwapStatusRequest) returns (SwapStatusResponse) {};
 }
 
@@ -74,6 +77,7 @@ message FindUserResponse {
 
 message EditUserRequest {
     User user = 1;
+    string current_password = 2;
 }
 
 message EditUserResponse {
@@ -82,6 +86,8 @@ message EditUserResponse {
 
 message SwapStatusRequest {
     int32 user_id = 1;
+    // for authorization purposes
+    string current_password = 2;
 }
 
 message SwapStatusResponse {

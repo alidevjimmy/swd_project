@@ -83,3 +83,104 @@ func (*UserServer) Register(ctx context.Context, req *userpb.RegisterRequest) (*
 		},
 	}, nil
 }
+
+func (*UserServer) FindUser(ctx context.Context, req *userpb.FindUserRequest) (*userpb.FindUserResponse, error) {
+	var user model.User
+	if err := postgresdb.DB.Where("id = ?", req.GetId()).Find(&user).Error; err != nil {
+		return nil, status.Errorf(
+			codes.Internal,
+			fmt.Sprintf("error while fetching data from database : %v", err),
+		)
+	}
+	if user.ID == 0 {
+		return nil, status.Errorf(
+			codes.NotFound,
+			fmt.Sprintf("کاربر یافت نشد"),
+		)
+	}
+	birth := timestamppb.New(user.Birth)
+	return &userpb.FindUserResponse{
+		User: &userpb.User{
+			Id:           int32(user.Model.ID),
+			Name:         user.Name,
+			Family:       user.Family,
+			Phone:        user.Phone,
+			NationalCode: user.NationalCode,
+			UserStatus:   userpb.UserStatus(user.Status),
+			Birth:        birth,
+		},
+	}, nil
+}
+
+func (*UserServer) EditUser(ctx context.Context, req *userpb.EditUserRequest) (*userpb.EditUserResponse, error) {
+	var user model.User
+	if err := postgresdb.DB.Where("id = ? AND password = ?", req.User.GetId(), req.GetCurrentPassword()).Find(&user).Error; err != nil {
+		return nil, status.Errorf(
+			codes.Internal,
+			fmt.Sprintf("error while fetching data from database : %v", err),
+		)
+	}
+	if user.ID == 0 {
+		return nil, status.Errorf(
+			codes.NotFound,
+			fmt.Sprintf("کاربر یافت نشد یا رمز عبور نادرست است"),
+		)
+	}
+
+	user.Password = req.User.GetPassword()
+	user.Name = req.User.GetName()
+	user.Family = req.User.GetFamily()
+	user.NationalCode = req.User.GetNationalCode()
+	user.Password = req.User.GetPassword()
+	user.Birth = req.User.GetBirth().AsTime()
+
+	if err := postgresdb.DB.Model(&user).Updates(user).Error; err != nil {
+		return nil, status.Errorf(
+			codes.Internal,
+			fmt.Sprintf("خطا هنگاه بروزرسانی اطلاعات کاربر"),
+		)
+	}
+	birth := timestamppb.New(user.Birth)
+	return &userpb.EditUserResponse{
+		User: &userpb.User{
+			Id:           int32(user.Model.ID),
+			Name:         user.Name,
+			Family:       user.Family,
+			Phone:        user.Phone,
+			NationalCode: user.NationalCode,
+			UserStatus:   userpb.UserStatus(user.Status),
+			Birth:        birth,
+		},
+	}, nil
+}
+
+func (*UserServer) SwapStatus(ctx context.Context, req *userpb.SwapStatusRequest) (*userpb.SwapStatusResponse, error) {
+	var user model.User
+	if err := postgresdb.DB.Where("id = ? AND password = ?", req.GetUserId(), req.GetCurrentPassword()).Find(&user).Error; err != nil {
+		return nil, status.Errorf(
+			codes.Internal,
+			fmt.Sprintf("error while fetching data from database : %v", err),
+		)
+	}
+	if user.ID == 0 {
+		return nil, status.Errorf(
+			codes.NotFound,
+			fmt.Sprintf("کاربر یافت نشد یا رمز عبور نادرست است"),
+		)
+	}
+	if user.Status != model.UserStatus(userpb.UserStatus_RED) {
+		return nil, status.Errorf(
+			codes.PermissionDenied,
+			fmt.Sprintf("وضعیت تنها از قرمز به سبز قابل تغییر است"),
+		)
+	}
+	user.Status = model.Green
+	if err := postgresdb.DB.Save(&user).Error; err != nil {
+		return nil, status.Errorf(
+			codes.Internal,
+			fmt.Sprintf("خطا هنگاه بروزرسانی وضعیت کاربر"),
+		)
+	}
+	// set active field for all reports as FALSE
+	return nil, nil
+}

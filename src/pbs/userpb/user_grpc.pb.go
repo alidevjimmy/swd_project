@@ -20,13 +20,16 @@ const _ = grpc.SupportPackageIsVersion7
 type UserServiceClient interface {
 	// Errors: INTERNAL , NOT_FOUND
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
-	// Errors: INTERNAL, INVALID_ARGUMENT -> "occurs when user with same phone number is exists"
+	// Errors: INTERNAL, ALREADY_EXISISTS -> "occurs when user with same phone number is exists"
 	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
 	// Errors: INTERNAL, NOT_FOUND
 	FindUser(ctx context.Context, in *FindUserRequest, opts ...grpc.CallOption) (*FindUserResponse, error)
 	// Errors: INTERNAL
 	// editing unique fields like "phone" is not allowed
 	// user should send his/her current password, in order to get permission for edit
+	// for updating password you need to send new password through "password" which is located in "User" message.
+	// and it's essential to send current password of user
+	// editing "phone" is not allowed
 	EditUser(ctx context.Context, in *EditUserRequest, opts ...grpc.CallOption) (*EditUserResponse, error)
 	// only swaping status from "RED" to "GREEN" is allowed
 	// Errors: INTERNAL, NOT_FOUND (user not found)
@@ -92,13 +95,16 @@ func (c *userServiceClient) SwapStatus(ctx context.Context, in *SwapStatusReques
 type UserServiceServer interface {
 	// Errors: INTERNAL , NOT_FOUND
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
-	// Errors: INTERNAL, INVALID_ARGUMENT -> "occurs when user with same phone number is exists"
+	// Errors: INTERNAL, ALREADY_EXISISTS -> "occurs when user with same phone number is exists"
 	Register(context.Context, *RegisterRequest) (*RegisterResponse, error)
 	// Errors: INTERNAL, NOT_FOUND
 	FindUser(context.Context, *FindUserRequest) (*FindUserResponse, error)
 	// Errors: INTERNAL
 	// editing unique fields like "phone" is not allowed
 	// user should send his/her current password, in order to get permission for edit
+	// for updating password you need to send new password through "password" which is located in "User" message.
+	// and it's essential to send current password of user
+	// editing "phone" is not allowed
 	EditUser(context.Context, *EditUserRequest) (*EditUserResponse, error)
 	// only swaping status from "RED" to "GREEN" is allowed
 	// Errors: INTERNAL, NOT_FOUND (user not found)
