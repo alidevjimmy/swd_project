@@ -8,7 +8,7 @@ option csharp_namespace = "GrpcServer";
 service ReserveService {
     // reserve time is not flexible and fixed at 1 hour
     rpc ReserveOneHour (ReserveOneHourRequest) returns (ReserveOneHourResponse) {};
-    // FindAllUserReserves only returns reserves which are not exceeded 
+    // FindAllUserReserves only returns reserves which are not exceeded (for specific user)
     rpc FindAllUserReserves (FindAllUserReservesRequest) returns (FindAllUserReservesResponse) {};
     // FindAllConsultantReserves only returns reserves which are not exceeded 
     rpc FindAllConsultantReserves (FindAllConsultantReservesRequest) returns (FindAllConsultantReservesResponse) {};

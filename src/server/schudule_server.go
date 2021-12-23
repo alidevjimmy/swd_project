@@ -6,6 +6,7 @@ import (
 	"swd_project/src/db/postgresdb"
 	"swd_project/src/model"
 	"swd_project/src/pbs/schudulepb"
+	"time"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -49,7 +50,7 @@ func (*SchuduleServer) CreateSchudule(ctx context.Context, req *schudulepb.Creat
 	for _, v := range schudules {
 		date := timestamppb.New(v.Date)
 		schudulesRes = append(schudulesRes, &schudulepb.Schudule{
-			Id: int32(v.ID),
+			Id:           int32(v.ID),
 			Date:         date,
 			StartHour:    int32(v.StartHour),
 			FinishHour:   int32(v.FinishHour),
@@ -62,9 +63,60 @@ func (*SchuduleServer) CreateSchudule(ctx context.Context, req *schudulepb.Creat
 }
 
 func (*SchuduleServer) FindAllOpenSchudules(ctx context.Context, req *schudulepb.FindAllOpenSchudulesRequest) (*schudulepb.FindAllOpenSchudulesResponse, error) {
-	return nil, nil
+	// something missed here (reserve times)!
+	var schudules = []model.Schudule{}
+	if err := postgresdb.DB.Where("date >= ?", time.Now()).Find(&schudules).Error; err != nil {
+		return nil, status.Errorf(
+			codes.NotFound,
+			fmt.Sprintf("خطا هنگام استخراج وقت های آزاد"),
+		)
+	}
+	var schudulesRes = []*schudulepb.Schudule{}
+	for _, v := range schudules {
+		if v.Date == time.Now() {
+			if time.Now().Local().Hour() >= v.FinishHour {
+				continue
+			}
+		}
+		date := timestamppb.New(v.Date)
+		schudulesRes = append(schudulesRes, &schudulepb.Schudule{
+			Id:           int32(v.ID),
+			Date:         date,
+			StartHour:    int32(v.StartHour),
+			FinishHour:   int32(v.FinishHour),
+			ConsultantId: int32(v.ConsultantID),
+		})
+	}
+	return &schudulepb.FindAllOpenSchudulesResponse{
+		Schudules: schudulesRes,
+	}, nil
 }
 
 func (*SchuduleServer) FindConsultantOpenSchudules(ctx context.Context, req *schudulepb.FindConsultantOpenSchudulesRequest) (*schudulepb.FindConsultantOpenSchudulesResponse, error) {
-	return nil, nil
+	var schudules = []model.Schudule{}
+	if err := postgresdb.DB.Where("consultant_id = ? AND date >= ?", req.GetConsultantId(), time.Now()).Find(&schudules).Error; err != nil {
+		return nil, status.Errorf(
+			codes.NotFound,
+			fmt.Sprintf("خطا هنگام استخراج وقت های آزاد"),
+		)
+	}
+	var schudulesRes = []*schudulepb.Schudule{}
+	for _, v := range schudules {
+		if v.Date == time.Now() {
+			if time.Now().Local().Hour() >= v.FinishHour {
+				continue
+			}
+		}
+		date := timestamppb.New(v.Date)
+		schudulesRes = append(schudulesRes, &schudulepb.Schudule{
+			Id:           int32(v.ID),
+			Date:         date,
+			StartHour:    int32(v.StartHour),
+			FinishHour:   int32(v.FinishHour),
+			ConsultantId: int32(v.ConsultantID),
+		})
+	}
+	return &schudulepb.FindConsultantOpenSchudulesResponse{
+		Schudules: schudulesRes,
+	}, nil
 }
