@@ -183,7 +183,7 @@ func (*UserServer) SwapStatus(ctx context.Context, req *userpb.SwapStatusRequest
 	}
 	// deactivate all reports which belongs to user
 	var report model.Report
-	if err := postgresdb.DB.Where("user_id = ? AND active = ?", req.GetUserId(), "true").Find(&report).Update("active", "false").Error; err != nil {
+	if err := postgresdb.DB.Where("user_id = ? AND active = ?", req.GetUserId(), true).Find(&report).Update("active", false).Error; err != nil {
 		return nil, status.Errorf(
 			codes.Internal,
 			fmt.Sprintf("خطا هنگاه بروزرسانی گزارشات کاربر"),

@@ -23,16 +23,19 @@ service ReportService {
 // 2. user thinks he will be in danger if he didn't changed his status to "GREEN"
 // in this case "address" and "until" are neccesury fields and "long","lat" are not allowed
 message Report {
-    string subject = 1;
-    int32 long = 2;
-    int32 lat = 3;
-    string address = 4;
-    int32 user_id = 5;
-    google.protobuf.Timestamp until = 6;
+    int32 id = 1;
+    string subject = 2;
+    int32 long = 3;
+    int32 lat = 4;
+    string address = 5;
+    int32 user_id = 6;
+    google.protobuf.Timestamp until = 7;
 }
 
 message CreateReportRequest {
     Report report = 1;
+    // for authorization purposes
+    string current_password = 2;
 }
 
 message CreateReportResponse {

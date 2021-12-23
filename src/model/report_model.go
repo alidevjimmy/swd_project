@@ -12,7 +12,7 @@ type Report struct {
 	Long    int    `gorm:"column:long;type:integer"`
 	Lat     int    `gorm:"column:lat;type:integer"`
 	Address string `gorm:"column:address;type:varchar(255)"`
-	Active  bool   `gorm:"column:active;type:varchar(255)"`
+	Active  bool   `gorm:"column:active;type:bool"`
 	UserID  int
 	User    User
 	Until   time.Time `gorm:"column:until;type:timestamp;default:"`
