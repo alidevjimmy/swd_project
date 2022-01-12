@@ -3,7 +3,7 @@ syntax = "proto3";
 package consultant;
 
 option go_package = "/consultantpb";
-option csharp_namespace = "GrpcServer";
+option csharp_namespace = "GrpcServer.Counsell";
 
 service ConsultantService {
     rpc FindConsultant(FindConsultantRequest) returns (FindConsultantResponse) {};

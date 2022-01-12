@@ -5,7 +5,7 @@ package schudule;
 import "google/protobuf/timestamp.proto";
 
 option go_package = "/schudulepb";
-option csharp_namespace = "GrpcServer";
+option csharp_namespace = "GrpcServer.Counsell";
 
 service SchuduleService {
     // consultant can create batch of schudules

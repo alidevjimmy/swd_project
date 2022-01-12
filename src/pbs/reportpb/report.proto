@@ -5,7 +5,7 @@ package report;
 import "google/protobuf/timestamp.proto";
 
 option go_package = "/reportpb";
-option csharp_namespace = "GrpcServer";
+option csharp_namespace = "GrpcServer.Report";
 
 service ReportService {
     // Errors: INTERNALE

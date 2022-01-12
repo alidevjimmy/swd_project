@@ -63,7 +63,7 @@ func (*SchuduleServer) CreateSchudule(ctx context.Context, req *schudulepb.Creat
 }
 
 func (*SchuduleServer) FindAllOpenSchudules(ctx context.Context, req *schudulepb.FindAllOpenSchudulesRequest) (*schudulepb.FindAllOpenSchudulesResponse, error) {
-	// something missed here (reserve times)!
+	// something missed here (reserved times)!
 	var schudules = []model.Schudule{}
 	if err := postgresdb.DB.Where("date >= ?", time.Now()).Find(&schudules).Error; err != nil {
 		return nil, status.Errorf(

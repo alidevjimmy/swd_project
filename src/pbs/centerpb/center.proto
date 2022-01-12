@@ -4,7 +4,7 @@ package center;
 
 
 option go_package = "/centerpb";
-option csharp_namespace = "GrpcServer";
+option csharp_namespace = "GrpcServer.Counsell";
 
 service CenterService {
     rpc FindAll(FindAllRequest) returns (FindAllResponse) {};

@@ -6,7 +6,7 @@ import "google/protobuf/timestamp.proto";
 
 
 option go_package = "/userpb";
-option csharp_namespace = "GrpcServer";
+option csharp_namespace = "GrpcServer.User";
 
 service UserService {
     // Errors: INTERNAL , NOT_FOUND
