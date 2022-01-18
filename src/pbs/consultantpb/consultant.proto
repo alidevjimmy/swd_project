@@ -30,5 +30,5 @@ message FindAllConsultantsRequest {
 }
 
 message FindAllConsultantsResponse {
-    repeated Consultant consultant = 1;
+    repeated Consultant consultants = 1;
 } 

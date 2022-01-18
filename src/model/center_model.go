@@ -10,4 +10,5 @@ type Center struct {
 	Website   string `gorm:"column:website;not null;type:varchar(255)"`
 	Telephone string `gorm:"column:telephone;not null;type:varchar(255)"`
 	Sms       string `gorm:"column:sms;not null;type:text"`
+	Address       string `gorm:"column:address;not null;type:text"`
 }

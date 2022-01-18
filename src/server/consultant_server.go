@@ -34,7 +34,7 @@ func (*ConsultantServer) FindAllConsultants(ctx context.Context, req *consultant
 		})
 	}
 	return &consultantpb.FindAllConsultantsResponse{
-		Consultant: consultanttsRes,
+		Consultants: consultanttsRes,
 	}, nil
 }
 
