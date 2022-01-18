@@ -8,8 +8,8 @@ option go_package = "/schudulepb";
 option csharp_namespace = "GrpcServer.Counsell";
 
 service SchuduleService {
-    rpc CreateSchudule(CreateSchuduleRequest) returns (CreateSchuduleResponse) {};
-    rpc FindAllOpenSchudules(FindAllSchudulesRequest) returns (FindAllSchudulesResponse) {}; 
+    rpc Create(CreateRequest) returns (CreateResponse) {};
+    rpc FindAll(FindAllRequest) returns (FindAllResponse) {}; 
 }
 
 message Period {
@@ -23,21 +23,21 @@ message Schudule {
     Period period = 3;
 }
 
-message CreateSchuduleRequest {
+message CreateRequest {
     int32 consultant_id = 1;
     repeated Period period = 2;
     int32 each = 3;
 }
 
-message CreateSchuduleResponse {
+message CreateResponse {
+    
+}
+
+message FindAllRequest {
     int32 consultant_id = 1;
     google.protobuf.Timestamp start = 2;
 }
 
-message FindAllSchudulesRequest {
-    repeated Schudule schudules = 1;
-}
-
-message FindAllSchudulesResponse {
+message FindAllResponse {
     repeated Schudule schudules = 1;
 }
