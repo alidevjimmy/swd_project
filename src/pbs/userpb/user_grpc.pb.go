@@ -32,7 +32,7 @@ type UserServiceClient interface {
 	// editing "phone" is not allowed
 	EditUser(ctx context.Context, in *EditUserRequest, opts ...grpc.CallOption) (*EditUserResponse, error)
 	// only swaping status from "RED" to "GREEN" is allowed
-	// Errors: INTERNAL, NOT_FOUND (user not found)
+	// Errors: INTERNAL, PERMISSION_DENIED (user status is not RED), NOT_FOUND (user not found)
 	SwapStatus(ctx context.Context, in *SwapStatusRequest, opts ...grpc.CallOption) (*SwapStatusResponse, error)
 }
 
@@ -107,7 +107,7 @@ type UserServiceServer interface {
 	// editing "phone" is not allowed
 	EditUser(context.Context, *EditUserRequest) (*EditUserResponse, error)
 	// only swaping status from "RED" to "GREEN" is allowed
-	// Errors: INTERNAL, NOT_FOUND (user not found)
+	// Errors: INTERNAL, PERMISSION_DENIED (user status is not RED), NOT_FOUND (user not found)
 	SwapStatus(context.Context, *SwapStatusRequest) (*SwapStatusResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }

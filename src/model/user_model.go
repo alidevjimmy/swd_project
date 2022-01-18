@@ -9,8 +9,9 @@ import (
 type UserStatus int32
 
 const (
-	Green UserStatus = 1	
-	Red   UserStatus = 2
+	Green  UserStatus = 1
+	Yellow UserStatus = 2
+	Red    UserStatus = 3
 )
 
 type User struct {

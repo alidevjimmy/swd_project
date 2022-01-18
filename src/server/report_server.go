@@ -6,6 +6,7 @@ import (
 	"swd_project/src/db/postgresdb"
 	"swd_project/src/model"
 	"swd_project/src/pbs/reportpb"
+	"time"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -37,7 +38,7 @@ func (*ReportServer) CreateReport(ctx context.Context, req *reportpb.CreateRepor
 		Address: req.GetReport().GetAddress(),
 		Active:  true,
 		UserID:  int(req.GetReport().GetUserId()),
-		Until:   req.GetReport().Until.AsTime(),
+		Until:   req.GetReport().GetUntil().AsTime(),
 	}
 	if err := postgresdb.DB.Create(&report).Error; err != nil {
 		return nil, status.Errorf(
@@ -45,7 +46,17 @@ func (*ReportServer) CreateReport(ctx context.Context, req *reportpb.CreateRepor
 			fmt.Sprintf("خطا هنگام ایجاد گزارش"),
 		)
 	}
-	user.Status = model.Red
+	if req.GetReport().GetUntil() == nil {
+		user.Status = model.Red
+	} else {
+		if report.Until.Unix() < time.Now().Unix() {
+			return nil, status.Errorf(
+				codes.Internal,
+				fmt.Sprintf("زمان احتمال می دهید کی در خطر باشید باید از الان بیشتر باشد"),
+			)
+		}
+		user.Status = model.Yellow
+	}
 	if err := postgresdb.DB.Save(&user).Error; err != nil {
 		return nil, status.Errorf(
 			codes.Internal,
@@ -65,6 +76,7 @@ func (*ReportServer) CreateReport(ctx context.Context, req *reportpb.CreateRepor
 		},
 	}, nil
 }
+
 func (*ReportServer) UserOpenReports(ctx context.Context, req *reportpb.UserOpenReportsRequest) (*reportpb.UserOpenReportsResponse, error) {
 	var user model.User
 	if err := postgresdb.DB.Where("id = ?", req.GetUserId()).Find(&user).Error; err != nil {
@@ -80,7 +92,7 @@ func (*ReportServer) UserOpenReports(ctx context.Context, req *reportpb.UserOpen
 		)
 	}
 	var reports []model.Report
-	if err := postgresdb.DB.Where("active = ?", "true").Find(&reports).Error; err != nil {
+	if err := postgresdb.DB.Where("active = ?", true).Find(&reports).Error; err != nil {
 		return nil, status.Errorf(
 			codes.Internal,
 			fmt.Sprintf("error while fetching data from database : %v", err),

@@ -7,6 +7,7 @@ import (
 	"swd_project/src/db/postgresdb"
 	"swd_project/src/model"
 	"swd_project/src/pbs/userpb"
+	"time"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -31,6 +32,15 @@ func (*UserServer) Login(ctx context.Context, req *userpb.LoginRequest) (*userpb
 			fmt.Sprintf("شماره یا رمز عبور نادرست است"),
 		)
 	}
+
+	updated, err := YellowToRed(user)
+	if err != nil {
+		return nil, err
+	}
+	if updated {
+		user.Status = model.Red
+	}
+
 	birth := timestamppb.New(user.Birth)
 	return &userpb.LoginResponse{
 		User: &userpb.User{
@@ -97,6 +107,13 @@ func (*UserServer) FindUser(ctx context.Context, req *userpb.FindUserRequest) (*
 			codes.NotFound,
 			fmt.Sprintf("کاربر یافت نشد"),
 		)
+	}
+	updated, err := YellowToRed(user)
+	if err != nil {
+		return nil, err
+	}
+	if updated {
+		user.Status = model.Red
 	}
 	birth := timestamppb.New(user.Birth)
 	return &userpb.FindUserResponse{
@@ -168,10 +185,10 @@ func (*UserServer) SwapStatus(ctx context.Context, req *userpb.SwapStatusRequest
 			fmt.Sprintf("کاربر یافت نشد یا رمز عبور نادرست است"),
 		)
 	}
-	if user.Status != model.UserStatus(userpb.UserStatus_RED) {
+	if user.Status != model.UserStatus(userpb.UserStatus_RED) && user.Status != model.UserStatus(userpb.UserStatus_YELLOW) {
 		return nil, status.Errorf(
 			codes.PermissionDenied,
-			fmt.Sprintf("وضعیت تنها از قرمز به سبز قابل تغییر است"),
+			fmt.Sprintf("وضعیت تنها از ناامن به امن قابل تغییر است"),
 		)
 	}
 	user.Status = model.Green
@@ -182,8 +199,8 @@ func (*UserServer) SwapStatus(ctx context.Context, req *userpb.SwapStatusRequest
 		)
 	}
 	// deactivate all reports which belongs to user
-	var report model.Report
-	if err := postgresdb.DB.Where("user_id = ? AND active = ?", req.GetUserId(), true).Find(&report).Update("active", false).Error; err != nil {
+	var reports []model.Report
+	if err := postgresdb.DB.Where("user_id = ? AND active = ?", req.GetUserId(), true).Find(&reports).UpdateColumn("active", false).Error; err != nil {
 		return nil, status.Errorf(
 			codes.Internal,
 			fmt.Sprintf("خطا هنگاه بروزرسانی گزارشات کاربر"),
@@ -202,4 +219,30 @@ func (*UserServer) SwapStatus(ctx context.Context, req *userpb.SwapStatusRequest
 			Birth:        birth,
 		},
 	}, nil
+}
+
+func YellowToRed(user model.User) (bool, error) {
+	if user.Status != model.Yellow {
+		return false, nil
+	}
+	var reports []model.Report
+	if err := postgresdb.DB.Where("user_id = ? AND active = ?", user.ID, true).Find(&reports).Error; err != nil {
+		return false, status.Errorf(
+			codes.Internal,
+			fmt.Sprintf("خطا هنگاه بروزرسانی وضعیت کاربر"),
+		)
+	}
+	for _, report := range reports {
+		if report.Until.Unix() < time.Now().Unix() {
+			user.Status = model.Red
+			if err := postgresdb.DB.Model(&user).Updates(&user); err != nil {
+				return false, status.Errorf(
+					codes.Internal,
+					fmt.Sprintf("خطا هنگاه بروزرسانی وضعیت کاربر"),
+				)
+			}
+			return true, nil
+		}
+	}
+	return false, nil
 }

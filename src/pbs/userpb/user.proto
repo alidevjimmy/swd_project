@@ -50,7 +50,8 @@ message LoginResponse {
 enum UserStatus {
     DEFAULT = 0;
     GREEN = 1;
-    RED = 2;
+    YELLOW = 2;
+    RED = 3;
 }
 
 message RegisterRequest {

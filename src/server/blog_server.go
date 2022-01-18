@@ -58,7 +58,6 @@ func (*BlogServer) Find(ctx context.Context, req *blogpb.FindRequest) (*blogpb.F
 			ImageUrl: post.ImageUrl,
 			Title:    post.Title,
 			Abstract: post.Abstract,
-			Body:     post.Body,
 		},
 	}, nil
 }
