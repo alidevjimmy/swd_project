@@ -8,7 +8,6 @@ option go_package = "/reservepb";
 option csharp_namespace = "GrpcServer.Counsell";
 
 service ReserveService {
-    // reserve time is not flexible and fixed at 1 hour
     rpc Reserve (ReserveRequest) returns (ReserveResponse) {};
 }
 
@@ -22,8 +21,4 @@ message ReserveRequest {
 
 message ReserveResponse {
     
-}
-
-message FindAllUserReservesRequest {
-    int32 user_id = 1;
 }
