@@ -29,7 +29,7 @@ func (*UserServer) Login(ctx context.Context, req *userpb.LoginRequest) (*userpb
 	if user.ID == 0 {
 		return nil, status.Errorf(
 			codes.NotFound,
-			fmt.Sprintf("شماره یا رمز عبور نادرست است"),
+			fmt.Sprintf("شماره همراه یا رمز عبور نادرست است"),
 		)
 	}
 
@@ -70,7 +70,7 @@ func (*UserServer) Register(ctx context.Context, req *userpb.RegisterRequest) (*
 		if strings.Contains(res.Error.Error(), "duplicate") {
 			return nil, status.Errorf(
 				codes.AlreadyExists,
-				fmt.Sprintf("این شماره تلفن قبلا ثبت شده است"),
+				fmt.Sprintf("این شماره همراه قبلا ثبت شده است"),
 			)
 		}
 		return nil, status.Errorf(
