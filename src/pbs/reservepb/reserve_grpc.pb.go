@@ -18,12 +18,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ReserveServiceClient interface {
-	// reserve time is not flexible and fixed at 1 hour
-	ReserveOneHour(ctx context.Context, in *ReserveOneHourRequest, opts ...grpc.CallOption) (*ReserveOneHourResponse, error)
-	// FindAllUserReserves only returns reserves which are not exceeded
-	FindAllUserReserves(ctx context.Context, in *FindAllUserReservesRequest, opts ...grpc.CallOption) (*FindAllUserReservesResponse, error)
-	// FindAllConsultantReserves only returns reserves which are not exceeded
-	FindAllConsultantReserves(ctx context.Context, in *FindAllConsultantReservesRequest, opts ...grpc.CallOption) (*FindAllConsultantReservesResponse, error)
+	Reserve(ctx context.Context, in *ReserveRequest, opts ...grpc.CallOption) (*ReserveResponse, error)
 }
 
 type reserveServiceClient struct {
@@ -34,27 +29,9 @@ func NewReserveServiceClient(cc grpc.ClientConnInterface) ReserveServiceClient {
 	return &reserveServiceClient{cc}
 }
 
-func (c *reserveServiceClient) ReserveOneHour(ctx context.Context, in *ReserveOneHourRequest, opts ...grpc.CallOption) (*ReserveOneHourResponse, error) {
-	out := new(ReserveOneHourResponse)
-	err := c.cc.Invoke(ctx, "/reserve.ReserveService/ReserveOneHour", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *reserveServiceClient) FindAllUserReserves(ctx context.Context, in *FindAllUserReservesRequest, opts ...grpc.CallOption) (*FindAllUserReservesResponse, error) {
-	out := new(FindAllUserReservesResponse)
-	err := c.cc.Invoke(ctx, "/reserve.ReserveService/FindAllUserReserves", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *reserveServiceClient) FindAllConsultantReserves(ctx context.Context, in *FindAllConsultantReservesRequest, opts ...grpc.CallOption) (*FindAllConsultantReservesResponse, error) {
-	out := new(FindAllConsultantReservesResponse)
-	err := c.cc.Invoke(ctx, "/reserve.ReserveService/FindAllConsultantReserves", in, out, opts...)
+func (c *reserveServiceClient) Reserve(ctx context.Context, in *ReserveRequest, opts ...grpc.CallOption) (*ReserveResponse, error) {
+	out := new(ReserveResponse)
+	err := c.cc.Invoke(ctx, "/reserve.ReserveService/Reserve", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -65,12 +42,7 @@ func (c *reserveServiceClient) FindAllConsultantReserves(ctx context.Context, in
 // All implementations must embed UnimplementedReserveServiceServer
 // for forward compatibility
 type ReserveServiceServer interface {
-	// reserve time is not flexible and fixed at 1 hour
-	ReserveOneHour(context.Context, *ReserveOneHourRequest) (*ReserveOneHourResponse, error)
-	// FindAllUserReserves only returns reserves which are not exceeded
-	FindAllUserReserves(context.Context, *FindAllUserReservesRequest) (*FindAllUserReservesResponse, error)
-	// FindAllConsultantReserves only returns reserves which are not exceeded
-	FindAllConsultantReserves(context.Context, *FindAllConsultantReservesRequest) (*FindAllConsultantReservesResponse, error)
+	Reserve(context.Context, *ReserveRequest) (*ReserveResponse, error)
 	mustEmbedUnimplementedReserveServiceServer()
 }
 
@@ -78,14 +50,8 @@ type ReserveServiceServer interface {
 type UnimplementedReserveServiceServer struct {
 }
 
-func (UnimplementedReserveServiceServer) ReserveOneHour(context.Context, *ReserveOneHourRequest) (*ReserveOneHourResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ReserveOneHour not implemented")
-}
-func (UnimplementedReserveServiceServer) FindAllUserReserves(context.Context, *FindAllUserReservesRequest) (*FindAllUserReservesResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method FindAllUserReserves not implemented")
-}
-func (UnimplementedReserveServiceServer) FindAllConsultantReserves(context.Context, *FindAllConsultantReservesRequest) (*FindAllConsultantReservesResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method FindAllConsultantReserves not implemented")
+func (UnimplementedReserveServiceServer) Reserve(context.Context, *ReserveRequest) (*ReserveResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Reserve not implemented")
 }
 func (UnimplementedReserveServiceServer) mustEmbedUnimplementedReserveServiceServer() {}
 
@@ -100,56 +66,20 @@ func RegisterReserveServiceServer(s grpc.ServiceRegistrar, srv ReserveServiceSer
 	s.RegisterService(&ReserveService_ServiceDesc, srv)
 }
 
-func _ReserveService_ReserveOneHour_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ReserveOneHourRequest)
+func _ReserveService_Reserve_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReserveRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ReserveServiceServer).ReserveOneHour(ctx, in)
+		return srv.(ReserveServiceServer).Reserve(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/reserve.ReserveService/ReserveOneHour",
+		FullMethod: "/reserve.ReserveService/Reserve",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ReserveServiceServer).ReserveOneHour(ctx, req.(*ReserveOneHourRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ReserveService_FindAllUserReserves_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FindAllUserReservesRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ReserveServiceServer).FindAllUserReserves(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/reserve.ReserveService/FindAllUserReserves",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ReserveServiceServer).FindAllUserReserves(ctx, req.(*FindAllUserReservesRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ReserveService_FindAllConsultantReserves_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FindAllConsultantReservesRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ReserveServiceServer).FindAllConsultantReserves(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/reserve.ReserveService/FindAllConsultantReserves",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ReserveServiceServer).FindAllConsultantReserves(ctx, req.(*FindAllConsultantReservesRequest))
+		return srv.(ReserveServiceServer).Reserve(ctx, req.(*ReserveRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -162,16 +92,8 @@ var ReserveService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*ReserveServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "ReserveOneHour",
-			Handler:    _ReserveService_ReserveOneHour_Handler,
-		},
-		{
-			MethodName: "FindAllUserReserves",
-			Handler:    _ReserveService_FindAllUserReserves_Handler,
-		},
-		{
-			MethodName: "FindAllConsultantReserves",
-			Handler:    _ReserveService_FindAllConsultantReserves_Handler,
+			MethodName: "Reserve",
+			Handler:    _ReserveService_Reserve_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

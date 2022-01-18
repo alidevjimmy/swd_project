@@ -9,6 +9,7 @@ package reservepb
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
 )
@@ -20,18 +21,18 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type Reserve struct {
+type ReserveRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Hour       int32 `protobuf:"varint,1,opt,name=hour,proto3" json:"hour,omitempty"`
-	UserId     int32 `protobuf:"varint,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	SchuduleId int32 `protobuf:"varint,3,opt,name=schudule_id,json=schuduleId,proto3" json:"schudule_id,omitempty"`
+	UserId       int32                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	ConsultantId int32                  `protobuf:"varint,2,opt,name=consultant_id,json=consultantId,proto3" json:"consultant_id,omitempty"`
+	Start        *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=start,proto3" json:"start,omitempty"`
 }
 
-func (x *Reserve) Reset() {
-	*x = Reserve{}
+func (x *ReserveRequest) Reset() {
+	*x = ReserveRequest{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_src_pbs_reservepb_reserve_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -39,13 +40,13 @@ func (x *Reserve) Reset() {
 	}
 }
 
-func (x *Reserve) String() string {
+func (x *ReserveRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*Reserve) ProtoMessage() {}
+func (*ReserveRequest) ProtoMessage() {}
 
-func (x *Reserve) ProtoReflect() protoreflect.Message {
+func (x *ReserveRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_src_pbs_reservepb_reserve_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -57,42 +58,40 @@ func (x *Reserve) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Reserve.ProtoReflect.Descriptor instead.
-func (*Reserve) Descriptor() ([]byte, []int) {
+// Deprecated: Use ReserveRequest.ProtoReflect.Descriptor instead.
+func (*ReserveRequest) Descriptor() ([]byte, []int) {
 	return file_src_pbs_reservepb_reserve_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *Reserve) GetHour() int32 {
-	if x != nil {
-		return x.Hour
-	}
-	return 0
-}
-
-func (x *Reserve) GetUserId() int32 {
+func (x *ReserveRequest) GetUserId() int32 {
 	if x != nil {
 		return x.UserId
 	}
 	return 0
 }
 
-func (x *Reserve) GetSchuduleId() int32 {
+func (x *ReserveRequest) GetConsultantId() int32 {
 	if x != nil {
-		return x.SchuduleId
+		return x.ConsultantId
 	}
 	return 0
 }
 
-type ReserveOneHourRequest struct {
+func (x *ReserveRequest) GetStart() *timestamppb.Timestamp {
+	if x != nil {
+		return x.Start
+	}
+	return nil
+}
+
+type ReserveResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
-
-	Reserve *Reserve `protobuf:"bytes,1,opt,name=reserve,proto3" json:"reserve,omitempty"`
 }
 
-func (x *ReserveOneHourRequest) Reset() {
-	*x = ReserveOneHourRequest{}
+func (x *ReserveResponse) Reset() {
+	*x = ReserveResponse{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_src_pbs_reservepb_reserve_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -100,13 +99,13 @@ func (x *ReserveOneHourRequest) Reset() {
 	}
 }
 
-func (x *ReserveOneHourRequest) String() string {
+func (x *ReserveResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ReserveOneHourRequest) ProtoMessage() {}
+func (*ReserveResponse) ProtoMessage() {}
 
-func (x *ReserveOneHourRequest) ProtoReflect() protoreflect.Message {
+func (x *ReserveResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_src_pbs_reservepb_reserve_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -118,251 +117,9 @@ func (x *ReserveOneHourRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ReserveOneHourRequest.ProtoReflect.Descriptor instead.
-func (*ReserveOneHourRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use ReserveResponse.ProtoReflect.Descriptor instead.
+func (*ReserveResponse) Descriptor() ([]byte, []int) {
 	return file_src_pbs_reservepb_reserve_proto_rawDescGZIP(), []int{1}
-}
-
-func (x *ReserveOneHourRequest) GetReserve() *Reserve {
-	if x != nil {
-		return x.Reserve
-	}
-	return nil
-}
-
-type ReserveOneHourResponse struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Reserve *Reserve `protobuf:"bytes,1,opt,name=reserve,proto3" json:"reserve,omitempty"`
-}
-
-func (x *ReserveOneHourResponse) Reset() {
-	*x = ReserveOneHourResponse{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_src_pbs_reservepb_reserve_proto_msgTypes[2]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *ReserveOneHourResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ReserveOneHourResponse) ProtoMessage() {}
-
-func (x *ReserveOneHourResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_src_pbs_reservepb_reserve_proto_msgTypes[2]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ReserveOneHourResponse.ProtoReflect.Descriptor instead.
-func (*ReserveOneHourResponse) Descriptor() ([]byte, []int) {
-	return file_src_pbs_reservepb_reserve_proto_rawDescGZIP(), []int{2}
-}
-
-func (x *ReserveOneHourResponse) GetReserve() *Reserve {
-	if x != nil {
-		return x.Reserve
-	}
-	return nil
-}
-
-type FindAllUserReservesRequest struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	UserId int32 `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-}
-
-func (x *FindAllUserReservesRequest) Reset() {
-	*x = FindAllUserReservesRequest{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_src_pbs_reservepb_reserve_proto_msgTypes[3]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *FindAllUserReservesRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*FindAllUserReservesRequest) ProtoMessage() {}
-
-func (x *FindAllUserReservesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_src_pbs_reservepb_reserve_proto_msgTypes[3]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use FindAllUserReservesRequest.ProtoReflect.Descriptor instead.
-func (*FindAllUserReservesRequest) Descriptor() ([]byte, []int) {
-	return file_src_pbs_reservepb_reserve_proto_rawDescGZIP(), []int{3}
-}
-
-func (x *FindAllUserReservesRequest) GetUserId() int32 {
-	if x != nil {
-		return x.UserId
-	}
-	return 0
-}
-
-type FindAllUserReservesResponse struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Reserve []*Reserve `protobuf:"bytes,1,rep,name=reserve,proto3" json:"reserve,omitempty"`
-}
-
-func (x *FindAllUserReservesResponse) Reset() {
-	*x = FindAllUserReservesResponse{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_src_pbs_reservepb_reserve_proto_msgTypes[4]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *FindAllUserReservesResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*FindAllUserReservesResponse) ProtoMessage() {}
-
-func (x *FindAllUserReservesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_src_pbs_reservepb_reserve_proto_msgTypes[4]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use FindAllUserReservesResponse.ProtoReflect.Descriptor instead.
-func (*FindAllUserReservesResponse) Descriptor() ([]byte, []int) {
-	return file_src_pbs_reservepb_reserve_proto_rawDescGZIP(), []int{4}
-}
-
-func (x *FindAllUserReservesResponse) GetReserve() []*Reserve {
-	if x != nil {
-		return x.Reserve
-	}
-	return nil
-}
-
-type FindAllConsultantReservesRequest struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	ConsultantId int32 `protobuf:"varint,1,opt,name=consultant_id,json=consultantId,proto3" json:"consultant_id,omitempty"`
-}
-
-func (x *FindAllConsultantReservesRequest) Reset() {
-	*x = FindAllConsultantReservesRequest{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_src_pbs_reservepb_reserve_proto_msgTypes[5]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *FindAllConsultantReservesRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*FindAllConsultantReservesRequest) ProtoMessage() {}
-
-func (x *FindAllConsultantReservesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_src_pbs_reservepb_reserve_proto_msgTypes[5]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use FindAllConsultantReservesRequest.ProtoReflect.Descriptor instead.
-func (*FindAllConsultantReservesRequest) Descriptor() ([]byte, []int) {
-	return file_src_pbs_reservepb_reserve_proto_rawDescGZIP(), []int{5}
-}
-
-func (x *FindAllConsultantReservesRequest) GetConsultantId() int32 {
-	if x != nil {
-		return x.ConsultantId
-	}
-	return 0
-}
-
-type FindAllConsultantReservesResponse struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Reserve []*Reserve `protobuf:"bytes,1,rep,name=reserve,proto3" json:"reserve,omitempty"`
-}
-
-func (x *FindAllConsultantReservesResponse) Reset() {
-	*x = FindAllConsultantReservesResponse{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_src_pbs_reservepb_reserve_proto_msgTypes[6]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *FindAllConsultantReservesResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*FindAllConsultantReservesResponse) ProtoMessage() {}
-
-func (x *FindAllConsultantReservesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_src_pbs_reservepb_reserve_proto_msgTypes[6]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use FindAllConsultantReservesResponse.ProtoReflect.Descriptor instead.
-func (*FindAllConsultantReservesResponse) Descriptor() ([]byte, []int) {
-	return file_src_pbs_reservepb_reserve_proto_rawDescGZIP(), []int{6}
-}
-
-func (x *FindAllConsultantReservesResponse) GetReserve() []*Reserve {
-	if x != nil {
-		return x.Reserve
-	}
-	return nil
 }
 
 var File_src_pbs_reservepb_reserve_proto protoreflect.FileDescriptor
@@ -370,61 +127,26 @@ var File_src_pbs_reservepb_reserve_proto protoreflect.FileDescriptor
 var file_src_pbs_reservepb_reserve_proto_rawDesc = []byte{
 	0x0a, 0x1f, 0x73, 0x72, 0x63, 0x2f, 0x70, 0x62, 0x73, 0x2f, 0x72, 0x65, 0x73, 0x65, 0x72, 0x76,
 	0x65, 0x70, 0x62, 0x2f, 0x72, 0x65, 0x73, 0x65, 0x72, 0x76, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x12, 0x07, 0x72, 0x65, 0x73, 0x65, 0x72, 0x76, 0x65, 0x22, 0x57, 0x0a, 0x07, 0x52, 0x65,
-	0x73, 0x65, 0x72, 0x76, 0x65, 0x12, 0x12, 0x0a, 0x04, 0x68, 0x6f, 0x75, 0x72, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x05, 0x52, 0x04, 0x68, 0x6f, 0x75, 0x72, 0x12, 0x17, 0x0a, 0x07, 0x75, 0x73, 0x65,
-	0x72, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x06, 0x75, 0x73, 0x65, 0x72,
-	0x49, 0x64, 0x12, 0x1f, 0x0a, 0x0b, 0x73, 0x63, 0x68, 0x75, 0x64, 0x75, 0x6c, 0x65, 0x5f, 0x69,
-	0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x05, 0x52, 0x0a, 0x73, 0x63, 0x68, 0x75, 0x64, 0x75, 0x6c,
-	0x65, 0x49, 0x64, 0x22, 0x43, 0x0a, 0x15, 0x52, 0x65, 0x73, 0x65, 0x72, 0x76, 0x65, 0x4f, 0x6e,
-	0x65, 0x48, 0x6f, 0x75, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x2a, 0x0a, 0x07,
-	0x72, 0x65, 0x73, 0x65, 0x72, 0x76, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x10, 0x2e,
-	0x72, 0x65, 0x73, 0x65, 0x72, 0x76, 0x65, 0x2e, 0x52, 0x65, 0x73, 0x65, 0x72, 0x76, 0x65, 0x52,
-	0x07, 0x72, 0x65, 0x73, 0x65, 0x72, 0x76, 0x65, 0x22, 0x44, 0x0a, 0x16, 0x52, 0x65, 0x73, 0x65,
-	0x72, 0x76, 0x65, 0x4f, 0x6e, 0x65, 0x48, 0x6f, 0x75, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x12, 0x2a, 0x0a, 0x07, 0x72, 0x65, 0x73, 0x65, 0x72, 0x76, 0x65, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x0b, 0x32, 0x10, 0x2e, 0x72, 0x65, 0x73, 0x65, 0x72, 0x76, 0x65, 0x2e, 0x52, 0x65,
-	0x73, 0x65, 0x72, 0x76, 0x65, 0x52, 0x07, 0x72, 0x65, 0x73, 0x65, 0x72, 0x76, 0x65, 0x22, 0x35,
-	0x0a, 0x1a, 0x46, 0x69, 0x6e, 0x64, 0x41, 0x6c, 0x6c, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x73,
-	0x65, 0x72, 0x76, 0x65, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x17, 0x0a, 0x07,
-	0x75, 0x73, 0x65, 0x72, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x06, 0x75,
-	0x73, 0x65, 0x72, 0x49, 0x64, 0x22, 0x49, 0x0a, 0x1b, 0x46, 0x69, 0x6e, 0x64, 0x41, 0x6c, 0x6c,
-	0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x73, 0x65, 0x72, 0x76, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x2a, 0x0a, 0x07, 0x72, 0x65, 0x73, 0x65, 0x72, 0x76, 0x65, 0x18,
-	0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x10, 0x2e, 0x72, 0x65, 0x73, 0x65, 0x72, 0x76, 0x65, 0x2e,
-	0x52, 0x65, 0x73, 0x65, 0x72, 0x76, 0x65, 0x52, 0x07, 0x72, 0x65, 0x73, 0x65, 0x72, 0x76, 0x65,
-	0x22, 0x47, 0x0a, 0x20, 0x46, 0x69, 0x6e, 0x64, 0x41, 0x6c, 0x6c, 0x43, 0x6f, 0x6e, 0x73, 0x75,
-	0x6c, 0x74, 0x61, 0x6e, 0x74, 0x52, 0x65, 0x73, 0x65, 0x72, 0x76, 0x65, 0x73, 0x52, 0x65, 0x71,
-	0x75, 0x65, 0x73, 0x74, 0x12, 0x23, 0x0a, 0x0d, 0x63, 0x6f, 0x6e, 0x73, 0x75, 0x6c, 0x74, 0x61,
-	0x6e, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x0c, 0x63, 0x6f, 0x6e,
-	0x73, 0x75, 0x6c, 0x74, 0x61, 0x6e, 0x74, 0x49, 0x64, 0x22, 0x4f, 0x0a, 0x21, 0x46, 0x69, 0x6e,
-	0x64, 0x41, 0x6c, 0x6c, 0x43, 0x6f, 0x6e, 0x73, 0x75, 0x6c, 0x74, 0x61, 0x6e, 0x74, 0x52, 0x65,
-	0x73, 0x65, 0x72, 0x76, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x2a,
-	0x0a, 0x07, 0x72, 0x65, 0x73, 0x65, 0x72, 0x76, 0x65, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32,
-	0x10, 0x2e, 0x72, 0x65, 0x73, 0x65, 0x72, 0x76, 0x65, 0x2e, 0x52, 0x65, 0x73, 0x65, 0x72, 0x76,
-	0x65, 0x52, 0x07, 0x72, 0x65, 0x73, 0x65, 0x72, 0x76, 0x65, 0x32, 0xbf, 0x02, 0x0a, 0x0e, 0x52,
-	0x65, 0x73, 0x65, 0x72, 0x76, 0x65, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x53, 0x0a,
-	0x0e, 0x52, 0x65, 0x73, 0x65, 0x72, 0x76, 0x65, 0x4f, 0x6e, 0x65, 0x48, 0x6f, 0x75, 0x72, 0x12,
-	0x1e, 0x2e, 0x72, 0x65, 0x73, 0x65, 0x72, 0x76, 0x65, 0x2e, 0x52, 0x65, 0x73, 0x65, 0x72, 0x76,
-	0x65, 0x4f, 0x6e, 0x65, 0x48, 0x6f, 0x75, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
-	0x1f, 0x2e, 0x72, 0x65, 0x73, 0x65, 0x72, 0x76, 0x65, 0x2e, 0x52, 0x65, 0x73, 0x65, 0x72, 0x76,
-	0x65, 0x4f, 0x6e, 0x65, 0x48, 0x6f, 0x75, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x22, 0x00, 0x12, 0x62, 0x0a, 0x13, 0x46, 0x69, 0x6e, 0x64, 0x41, 0x6c, 0x6c, 0x55, 0x73, 0x65,
-	0x72, 0x52, 0x65, 0x73, 0x65, 0x72, 0x76, 0x65, 0x73, 0x12, 0x23, 0x2e, 0x72, 0x65, 0x73, 0x65,
-	0x72, 0x76, 0x65, 0x2e, 0x46, 0x69, 0x6e, 0x64, 0x41, 0x6c, 0x6c, 0x55, 0x73, 0x65, 0x72, 0x52,
-	0x65, 0x73, 0x65, 0x72, 0x76, 0x65, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x24,
-	0x2e, 0x72, 0x65, 0x73, 0x65, 0x72, 0x76, 0x65, 0x2e, 0x46, 0x69, 0x6e, 0x64, 0x41, 0x6c, 0x6c,
-	0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x73, 0x65, 0x72, 0x76, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x74, 0x0a, 0x19, 0x46, 0x69, 0x6e, 0x64, 0x41, 0x6c,
-	0x6c, 0x43, 0x6f, 0x6e, 0x73, 0x75, 0x6c, 0x74, 0x61, 0x6e, 0x74, 0x52, 0x65, 0x73, 0x65, 0x72,
-	0x76, 0x65, 0x73, 0x12, 0x29, 0x2e, 0x72, 0x65, 0x73, 0x65, 0x72, 0x76, 0x65, 0x2e, 0x46, 0x69,
-	0x6e, 0x64, 0x41, 0x6c, 0x6c, 0x43, 0x6f, 0x6e, 0x73, 0x75, 0x6c, 0x74, 0x61, 0x6e, 0x74, 0x52,
-	0x65, 0x73, 0x65, 0x72, 0x76, 0x65, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2a,
-	0x2e, 0x72, 0x65, 0x73, 0x65, 0x72, 0x76, 0x65, 0x2e, 0x46, 0x69, 0x6e, 0x64, 0x41, 0x6c, 0x6c,
-	0x43, 0x6f, 0x6e, 0x73, 0x75, 0x6c, 0x74, 0x61, 0x6e, 0x74, 0x52, 0x65, 0x73, 0x65, 0x72, 0x76,
-	0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x42, 0x19, 0x5a, 0x0a,
-	0x2f, 0x72, 0x65, 0x73, 0x65, 0x72, 0x76, 0x65, 0x70, 0x62, 0xaa, 0x02, 0x0a, 0x47, 0x72, 0x70,
-	0x63, 0x53, 0x65, 0x72, 0x76, 0x65, 0x72, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x6f, 0x12, 0x07, 0x72, 0x65, 0x73, 0x65, 0x72, 0x76, 0x65, 0x1a, 0x1f, 0x67, 0x6f, 0x6f, 0x67,
+	0x6c, 0x65, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2f, 0x74, 0x69, 0x6d, 0x65,
+	0x73, 0x74, 0x61, 0x6d, 0x70, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x80, 0x01, 0x0a, 0x0e,
+	0x52, 0x65, 0x73, 0x65, 0x72, 0x76, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x17,
+	0x0a, 0x07, 0x75, 0x73, 0x65, 0x72, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52,
+	0x06, 0x75, 0x73, 0x65, 0x72, 0x49, 0x64, 0x12, 0x23, 0x0a, 0x0d, 0x63, 0x6f, 0x6e, 0x73, 0x75,
+	0x6c, 0x74, 0x61, 0x6e, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x0c,
+	0x63, 0x6f, 0x6e, 0x73, 0x75, 0x6c, 0x74, 0x61, 0x6e, 0x74, 0x49, 0x64, 0x12, 0x30, 0x0a, 0x05,
+	0x73, 0x74, 0x61, 0x72, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f,
+	0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69,
+	0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x05, 0x73, 0x74, 0x61, 0x72, 0x74, 0x22, 0x11,
+	0x0a, 0x0f, 0x52, 0x65, 0x73, 0x65, 0x72, 0x76, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x32, 0x50, 0x0a, 0x0e, 0x52, 0x65, 0x73, 0x65, 0x72, 0x76, 0x65, 0x53, 0x65, 0x72, 0x76,
+	0x69, 0x63, 0x65, 0x12, 0x3e, 0x0a, 0x07, 0x52, 0x65, 0x73, 0x65, 0x72, 0x76, 0x65, 0x12, 0x17,
+	0x2e, 0x72, 0x65, 0x73, 0x65, 0x72, 0x76, 0x65, 0x2e, 0x52, 0x65, 0x73, 0x65, 0x72, 0x76, 0x65,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x18, 0x2e, 0x72, 0x65, 0x73, 0x65, 0x72, 0x76,
+	0x65, 0x2e, 0x52, 0x65, 0x73, 0x65, 0x72, 0x76, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x22, 0x00, 0x42, 0x22, 0x5a, 0x0a, 0x2f, 0x72, 0x65, 0x73, 0x65, 0x72, 0x76, 0x65, 0x70,
+	0x62, 0xaa, 0x02, 0x13, 0x47, 0x72, 0x70, 0x63, 0x53, 0x65, 0x72, 0x76, 0x65, 0x72, 0x2e, 0x43,
+	0x6f, 0x75, 0x6e, 0x73, 0x65, 0x6c, 0x6c, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -439,32 +161,21 @@ func file_src_pbs_reservepb_reserve_proto_rawDescGZIP() []byte {
 	return file_src_pbs_reservepb_reserve_proto_rawDescData
 }
 
-var file_src_pbs_reservepb_reserve_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_src_pbs_reservepb_reserve_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_src_pbs_reservepb_reserve_proto_goTypes = []interface{}{
-	(*Reserve)(nil),                           // 0: reserve.Reserve
-	(*ReserveOneHourRequest)(nil),             // 1: reserve.ReserveOneHourRequest
-	(*ReserveOneHourResponse)(nil),            // 2: reserve.ReserveOneHourResponse
-	(*FindAllUserReservesRequest)(nil),        // 3: reserve.FindAllUserReservesRequest
-	(*FindAllUserReservesResponse)(nil),       // 4: reserve.FindAllUserReservesResponse
-	(*FindAllConsultantReservesRequest)(nil),  // 5: reserve.FindAllConsultantReservesRequest
-	(*FindAllConsultantReservesResponse)(nil), // 6: reserve.FindAllConsultantReservesResponse
+	(*ReserveRequest)(nil),        // 0: reserve.ReserveRequest
+	(*ReserveResponse)(nil),       // 1: reserve.ReserveResponse
+	(*timestamppb.Timestamp)(nil), // 2: google.protobuf.Timestamp
 }
 var file_src_pbs_reservepb_reserve_proto_depIdxs = []int32{
-	0, // 0: reserve.ReserveOneHourRequest.reserve:type_name -> reserve.Reserve
-	0, // 1: reserve.ReserveOneHourResponse.reserve:type_name -> reserve.Reserve
-	0, // 2: reserve.FindAllUserReservesResponse.reserve:type_name -> reserve.Reserve
-	0, // 3: reserve.FindAllConsultantReservesResponse.reserve:type_name -> reserve.Reserve
-	1, // 4: reserve.ReserveService.ReserveOneHour:input_type -> reserve.ReserveOneHourRequest
-	3, // 5: reserve.ReserveService.FindAllUserReserves:input_type -> reserve.FindAllUserReservesRequest
-	5, // 6: reserve.ReserveService.FindAllConsultantReserves:input_type -> reserve.FindAllConsultantReservesRequest
-	2, // 7: reserve.ReserveService.ReserveOneHour:output_type -> reserve.ReserveOneHourResponse
-	4, // 8: reserve.ReserveService.FindAllUserReserves:output_type -> reserve.FindAllUserReservesResponse
-	6, // 9: reserve.ReserveService.FindAllConsultantReserves:output_type -> reserve.FindAllConsultantReservesResponse
-	7, // [7:10] is the sub-list for method output_type
-	4, // [4:7] is the sub-list for method input_type
-	4, // [4:4] is the sub-list for extension type_name
-	4, // [4:4] is the sub-list for extension extendee
-	0, // [0:4] is the sub-list for field type_name
+	2, // 0: reserve.ReserveRequest.start:type_name -> google.protobuf.Timestamp
+	0, // 1: reserve.ReserveService.Reserve:input_type -> reserve.ReserveRequest
+	1, // 2: reserve.ReserveService.Reserve:output_type -> reserve.ReserveResponse
+	2, // [2:3] is the sub-list for method output_type
+	1, // [1:2] is the sub-list for method input_type
+	1, // [1:1] is the sub-list for extension type_name
+	1, // [1:1] is the sub-list for extension extendee
+	0, // [0:1] is the sub-list for field type_name
 }
 
 func init() { file_src_pbs_reservepb_reserve_proto_init() }
@@ -474,7 +185,7 @@ func file_src_pbs_reservepb_reserve_proto_init() {
 	}
 	if !protoimpl.UnsafeEnabled {
 		file_src_pbs_reservepb_reserve_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Reserve); i {
+			switch v := v.(*ReserveRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -486,67 +197,7 @@ func file_src_pbs_reservepb_reserve_proto_init() {
 			}
 		}
 		file_src_pbs_reservepb_reserve_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ReserveOneHourRequest); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_src_pbs_reservepb_reserve_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ReserveOneHourResponse); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_src_pbs_reservepb_reserve_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*FindAllUserReservesRequest); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_src_pbs_reservepb_reserve_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*FindAllUserReservesResponse); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_src_pbs_reservepb_reserve_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*FindAllConsultantReservesRequest); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_src_pbs_reservepb_reserve_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*FindAllConsultantReservesResponse); i {
+			switch v := v.(*ReserveResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -564,7 +215,7 @@ func file_src_pbs_reservepb_reserve_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_src_pbs_reservepb_reserve_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   7,
+			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

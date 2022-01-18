@@ -1,15 +1,15 @@
 syntax = "proto3";
 
-package schudule;
+package schedule;
 
 import "google/protobuf/timestamp.proto";
 
-option go_package = "/schudulepb";
+option go_package = "/schedulepb";
 option csharp_namespace = "GrpcServer.Counsell";
 
-service SchuduleService {
+service ScheduleService {
     rpc Create(CreateRequest) returns (CreateResponse) {};
-    rpc FindAll(FindAllRequest) returns (FindAllResponse) {}; 
+    rpc FindAllSchedules(FindAllSchedulesRequest) returns (FindAllSchedulesResponse) {}; 
 }
 
 message Period {
@@ -17,7 +17,7 @@ message Period {
     google.protobuf.Timestamp end = 2;
 }
 
-message Schudule {
+message Schedule {
     int32 consultant_id = 1;
     int32 user_id = 2;
     Period period = 3;
@@ -25,7 +25,7 @@ message Schudule {
 
 message CreateRequest {
     int32 consultant_id = 1;
-    repeated Period period = 2;
+    repeated Period periods = 2;
     int32 each = 3;
 }
 
@@ -33,11 +33,11 @@ message CreateResponse {
     
 }
 
-message FindAllRequest {
+message FindAllSchedulesRequest {
     int32 consultant_id = 1;
     google.protobuf.Timestamp start = 2;
 }
 
-message FindAllResponse {
-    repeated Schudule schudules = 1;
+message FindAllSchedulesResponse {
+    repeated Schedule schedules = 1;
 }

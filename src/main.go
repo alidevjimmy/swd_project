@@ -14,7 +14,7 @@ import (
 	"swd_project/src/pbs/consultantpb"
 	"swd_project/src/pbs/reportpb"
 	"swd_project/src/pbs/reservepb"
-	"swd_project/src/pbs/schudulepb"
+	"swd_project/src/pbs/schedulepb"
 	"swd_project/src/pbs/userpb"
 	"swd_project/src/server"
 
@@ -32,7 +32,7 @@ func main() {
 	fmt.Println("Server is running...")
 
 	postgresdb.PostgresInit()
-	if err := postgresdb.DB.AutoMigrate(&model.User{}, &model.Consultant{}, &model.Report{}, &model.Schudule{}, &model.Reserve{}, &model.Center{}, &model.Post{}); err != nil {
+	if err := postgresdb.DB.AutoMigrate(&model.User{}, &model.Consultant{}, &model.Report{}, &model.Schedule{}, &model.Reserve{}, &model.Center{}, &model.Post{}); err != nil {
 		log.Fatalf("error while AutoMigrate : %v", err)
 	}
 
@@ -57,7 +57,7 @@ func serviceRegistry(s *grpc.Server) {
 	centerpb.RegisterCenterServiceServer(s, &server.CenterServer{})
 	consultantpb.RegisterConsultantServiceServer(s, &server.ConsultantServer{})
 	reportpb.RegisterReportServiceServer(s, &server.ReportServer{})
-	schudulepb.RegisterSchuduleServiceServer(s, &server.SchuduleServer{})
+	schedulepb.RegisterScheduleServiceServer(s, &server.ScheduleServer{})
 	reservepb.RegisterReserveServiceServer(s, &server.ReserveServer{})
 	blogpb.RegisterBlogServiceServer(s, &server.BlogServer{})
 }
