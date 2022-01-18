@@ -2,42 +2,28 @@ syntax = "proto3";
 
 package reserve;
 
+import "google/protobuf/timestamp.proto";
+
 option go_package = "/reservepb";
 option csharp_namespace = "GrpcServer.Counsell";
 
 service ReserveService {
     // reserve time is not flexible and fixed at 1 hour
-    rpc ReserveOneHour (ReserveOneHourRequest) returns (ReserveOneHourResponse) {};
-    // FindAllUserReserves only returns reserves which are not exceeded (for specific user)
-    rpc FindAllUserReserves (FindAllUserReservesRequest) returns (FindAllUserReservesResponse) {};
+    rpc Reserve (ReserveRequest) returns (ReserveResponse) {};
 }
 
-message Reserve {
-    int32 hour = 1;
-    int32 user_id = 2;
-    int32 schudule_id = 3;
+
+
+message ReserveRequest {
+    int32 user_id = 1;
+    int32 consultant_id = 2;
+    google.protobuf.Timestamp start = 3;
 }
 
-message ReserveOneHourRequest {
-    Reserve reserve = 1;
-}
-
-message ReserveOneHourResponse {
-    Reserve reserve = 1;
+message ReserveResponse {
+    
 }
 
 message FindAllUserReservesRequest {
     int32 user_id = 1;
-}
-
-message FindAllUserReservesResponse {
-    repeated Reserve reserve = 1;
-}
-
-message FindAllConsultantReservesRequest {
-    int32 consultant_id = 1;
-}
-
-message FindAllConsultantReservesResponse {
-    repeated Reserve reserve = 1;
 }
