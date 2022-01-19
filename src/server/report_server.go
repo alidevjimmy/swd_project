@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"fmt"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 	"swd_project/src/db/postgresdb"
 	"swd_project/src/model"
 	"swd_project/src/pbs/reportpb"
@@ -33,8 +34,8 @@ func (*ReportServer) CreateReport(ctx context.Context, req *reportpb.CreateRepor
 	}
 	report := model.Report{
 		Subject: req.GetReport().GetSubject(),
-		Long:    int(req.GetReport().GetLong()),
-		Lat:     int(req.GetReport().GetLat()),
+		Long:    req.GetReport().GetLong().Value,
+		Lat:     req.GetReport().GetLat().Value,
 		Address: req.GetReport().GetAddress(),
 		Active:  true,
 		UserID:  int(req.GetReport().GetUserId()),
@@ -68,8 +69,8 @@ func (*ReportServer) CreateReport(ctx context.Context, req *reportpb.CreateRepor
 		Report: &reportpb.Report{
 			Id:      int32(report.ID),
 			Subject: report.Subject,
-			Long:    int32(report.Long),
-			Lat:     int32(report.Lat),
+			Long:    wrapperspb.Double(report.Long),
+			Lat:     wrapperspb.Double(report.Lat),
 			Address: report.Address,
 			UserId:  int32(report.UserID),
 			Until:   until,
@@ -104,8 +105,8 @@ func (*ReportServer) UserOpenReports(ctx context.Context, req *reportpb.UserOpen
 		reportsRes = append(reportsRes, &reportpb.Report{
 			Id:      int32(v.Model.ID),
 			Subject: v.Subject,
-			Long:    int32(v.Long),
-			Lat:     int32(v.Lat),
+			Long:    wrapperspb.Double(v.Long),
+			Lat:     wrapperspb.Double(v.Lat),
 			Address: v.Address,
 			UserId:  int32(v.UserID),
 			Until:   until,

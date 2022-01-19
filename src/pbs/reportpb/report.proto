@@ -3,6 +3,7 @@ syntax = "proto3";
 package report;
 
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
 
 option go_package = "/reportpb";
 option csharp_namespace = "GrpcServer.Report";
@@ -25,8 +26,8 @@ service ReportService {
 message Report {
     int32 id = 1;
     string subject = 2;
-    int32 long = 3;
-    int32 lat = 4;
+    google.protobuf.DoubleValue long = 3;
+    google.protobuf.DoubleValue lat = 4;
     string address = 5;
     int32 user_id = 6;
     google.protobuf.Timestamp until = 7;
