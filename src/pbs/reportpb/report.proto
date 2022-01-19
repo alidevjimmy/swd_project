@@ -40,7 +40,7 @@ message CreateReportRequest {
 }
 
 message CreateReportResponse {
-    Report report = 1;
+
 }
 
 message UserOpenReportsRequest {

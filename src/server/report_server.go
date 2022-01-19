@@ -3,15 +3,14 @@ package server
 import (
 	"context"
 	"fmt"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 	"swd_project/src/db/postgresdb"
 	"swd_project/src/model"
 	"swd_project/src/pbs/reportpb"
 	"time"
-
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type ReportServer struct {
@@ -34,12 +33,27 @@ func (*ReportServer) CreateReport(ctx context.Context, req *reportpb.CreateRepor
 	}
 	report := model.Report{
 		Subject: req.GetReport().GetSubject(),
-		Long:    req.GetReport().GetLong().Value,
-		Lat:     req.GetReport().GetLat().Value,
 		Address: req.GetReport().GetAddress(),
 		Active:  true,
 		UserID:  int(req.GetReport().GetUserId()),
 		Until:   req.GetReport().GetUntil().AsTime(),
+	}
+	if req.GetReport().GetLong() != nil {
+		report.Long = &(req.GetReport().GetLong().Value)
+	}
+	if req.GetReport().GetLat() != nil {
+		report.Lat = &(req.GetReport().GetLat().Value)
+	}
+	if req.GetReport().GetUntil() == nil {
+		user.Status = model.Red
+	} else {
+		if report.Until.Unix() < time.Now().Unix() {
+			return nil, status.Errorf(
+				codes.FailedPrecondition,
+				fmt.Sprintf("زمانی که احتمال می دهید در خطر باشید، باید از الان بیشتر باشد"),
+			)
+		}
+		user.Status = model.Yellow
 	}
 	if err := postgresdb.DB.Create(&report).Error; err != nil {
 		return nil, status.Errorf(
@@ -47,35 +61,13 @@ func (*ReportServer) CreateReport(ctx context.Context, req *reportpb.CreateRepor
 			fmt.Sprintf("خطا هنگام ایجاد گزارش"),
 		)
 	}
-	if req.GetReport().GetUntil() == nil {
-		user.Status = model.Red
-	} else {
-		if report.Until.Unix() < time.Now().Unix() {
-			return nil, status.Errorf(
-				codes.Internal,
-				fmt.Sprintf("زمان احتمال می دهید کی در خطر باشید باید از الان بیشتر باشد"),
-			)
-		}
-		user.Status = model.Yellow
-	}
 	if err := postgresdb.DB.Save(&user).Error; err != nil {
 		return nil, status.Errorf(
 			codes.Internal,
 			fmt.Sprintf("خطا هنگاه بروزرسانی وضعیت کاربر"),
 		)
 	}
-	until := timestamppb.New(report.Until)
-	return &reportpb.CreateReportResponse{
-		Report: &reportpb.Report{
-			Id:      int32(report.ID),
-			Subject: report.Subject,
-			Long:    wrapperspb.Double(report.Long),
-			Lat:     wrapperspb.Double(report.Lat),
-			Address: report.Address,
-			UserId:  int32(report.UserID),
-			Until:   until,
-		},
-	}, nil
+	return &reportpb.CreateReportResponse{}, nil
 }
 
 func (*ReportServer) UserOpenReports(ctx context.Context, req *reportpb.UserOpenReportsRequest) (*reportpb.UserOpenReportsResponse, error) {
@@ -105,8 +97,8 @@ func (*ReportServer) UserOpenReports(ctx context.Context, req *reportpb.UserOpen
 		reportsRes = append(reportsRes, &reportpb.Report{
 			Id:      int32(v.Model.ID),
 			Subject: v.Subject,
-			Long:    wrapperspb.Double(v.Long),
-			Lat:     wrapperspb.Double(v.Lat),
+			Long:    wrapperspb.Double(*v.Long),
+			Lat:     wrapperspb.Double(*v.Lat),
 			Address: v.Address,
 			UserId:  int32(v.UserID),
 			Until:   until,
