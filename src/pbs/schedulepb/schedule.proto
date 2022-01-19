@@ -25,7 +25,7 @@ message Schedule {
 
 message CreateRequest {
     int32 consultant_id = 1;
-    repeated Period periods = 2;
+    Period period = 2;
     int32 each = 3;
 }
 

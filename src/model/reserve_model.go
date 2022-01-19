@@ -8,7 +8,7 @@ import (
 
 type Reserve struct {
 	gorm.Model
-	Start        time.Time `gorm:"column:start;type:integer"`
+	Start        time.Time `gorm:"column:start;not null;type:timestamp"`
 	UserID       int
 	User         User
 	ConsultantID int

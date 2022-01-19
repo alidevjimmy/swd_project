@@ -2,15 +2,14 @@ package server
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"swd_project/src/db/postgresdb"
 	"swd_project/src/model"
 	"swd_project/src/pbs/schedulepb"
 	"time"
-
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 type ScheduleServer struct {
@@ -31,23 +30,12 @@ func (*ScheduleServer) Create(ctx context.Context, req *schedulepb.CreateRequest
 			fmt.Sprintf("مشاور یافت نشد"),
 		)
 	}
-	var periods = model.Periods{}
-	for _, period := range req.GetPeriods() {
-		periods = append(periods, struct {
-			Start time.Time `json:"start"`
-			End   time.Time `json:"end"`
-		}{
-			Start: period.Start.AsTime(),
-			End:   period.End.AsTime(),
-		})
-	}
 	schedule := model.Schedule{
 		Each:         int(req.GetEach()),
 		ConsultantID: int(req.GetConsultantId()),
+		Start:        req.GetPeriod().Start.AsTime(),
+		End:          req.GetPeriod().End.AsTime(),
 	}
-
-	jsonByte, _ := json.Marshal(periods)
-	schedule.Periods = jsonByte
 	if err := postgresdb.DB.Create(&schedule).Error; err != nil {
 		return nil, status.Errorf(
 			codes.Internal,
@@ -58,31 +46,47 @@ func (*ScheduleServer) Create(ctx context.Context, req *schedulepb.CreateRequest
 }
 
 func (*ScheduleServer) FindAllSchedules(ctx context.Context, req *schedulepb.FindAllSchedulesRequest) (*schedulepb.FindAllSchedulesResponse, error) {
-	// var schedules = []model.Schedule{}
-	// if err := postgresdb.DB.Where("date >= ?", time.Now()).Find(&schedules).Error; err != nil {
-	// 	return nil, status.Errorf(
-	// 		codes.NotFound,
-	// 		fmt.Sprintf("خطا هنگام استخراج وقت های آزاد"),
-	// 	)
-	// }
-	// var schedulesRes = []*schedulepb.Schedule{}
-	// for _, v := range schedules {
-	// 	if v.Date == time.Now() {
-	// 		if time.Now().Local().Hour() >= v.FinishHour {
-	// 			continue
-	// 		}
-	// 	}
-	// 	date := timestamppb.New(v.Date)
-	// 	schedulesRes = append(schedulesRes, &schedulepb.Schedule{
-	// 		Id:           int32(v.ID),
-	// 		Date:         date,
-	// 		StartHour:    int32(v.StartHour),
-	// 		FinishHour:   int32(v.FinishHour),
-	// 		ConsultantId: int32(v.ConsultantID),
-	// 	})
-	// }
-	// return &schedulepb.FindAllOpenSchedulesResponse{
-	// 	Schedules: schedulesRes,
-	// }, nil
-	return &schedulepb.FindAllSchedulesResponse{}, nil
+	var schedules = []model.Schedule{}
+	if err := postgresdb.DB.Where("consultant_id = ? AND start > ?", req.GetConsultantId(), req.GetStart().AsTime()).Find(&schedules).Error; err != nil {
+		return nil, status.Errorf(
+			codes.Internal,
+			fmt.Sprintf("error while fetching data from database : %v", err),
+		)
+	}
+	fmt.Println(schedules)
+	var resSchedules = []*schedulepb.Schedule{}
+	for _, schedule := range schedules {
+		slotsCount := int(int(schedule.End.Sub(schedule.Start).Minutes()) / schedule.Each)
+		//fmt.Println(int(schedule.End.Sub(schedule.Start).Minutes()), slotsCount)
+		for i := 1; i <= slotsCount; i++ {
+			if schedule.Start.Add(time.Duration(i*schedule.Each)*time.Minute).Unix() > req.GetStart().AsTime().Add(24*time.Hour).Unix() {
+				continue
+			}
+			end := timestamppb.New(schedule.Start.Add(time.Duration(i*schedule.Each) * time.Minute))
+			start := timestamppb.New(schedule.Start.Add(time.Duration(i*schedule.Each) * time.Minute).Add(time.Duration(-schedule.Each) * time.Minute))
+			newSchedule := &schedulepb.Schedule{
+				ConsultantId: int32(schedule.ConsultantID),
+				Period: &schedulepb.Period{
+					Start: start,
+					End:   end,
+				},
+				UserId: 0,
+			}
+			// find user for this schedule
+			var reserve = model.Reserve{}
+			if err := postgresdb.DB.Where("consultant_id = ? AND start = ?", schedule.ConsultantID, start.AsTime()).Find(&reserve).Error; err != nil {
+				return nil, status.Errorf(
+					codes.Internal,
+					fmt.Sprintf("error while fetching data from database : %v", err),
+				)
+			}
+			if reserve.UserID != 0 {
+				newSchedule.UserId = int32(reserve.UserID)
+			}
+			resSchedules = append(resSchedules, newSchedule)
+		}
+	}
+	return &schedulepb.FindAllSchedulesResponse{
+		Schedules: resSchedules,
+	}, nil
 }
