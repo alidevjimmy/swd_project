@@ -47,7 +47,7 @@ func (*ScheduleServer) Create(ctx context.Context, req *schedulepb.CreateRequest
 
 func (*ScheduleServer) FindAllSchedules(ctx context.Context, req *schedulepb.FindAllSchedulesRequest) (*schedulepb.FindAllSchedulesResponse, error) {
 	var schedules = []model.Schedule{}
-	if err := postgresdb.DB.Where("consultant_id = ? AND start > ?", req.GetConsultantId(), req.GetStart().AsTime()).Find(&schedules).Error; err != nil {
+	if err := postgresdb.DB.Where("consultant_id = ? AND end > ? AND start < ?", req.GetConsultantId(), req.GetStart().AsTime(), req.GetStart().AsTime().Add(24*time.Hour)).Find(&schedules).Error; err != nil {
 		return nil, status.Errorf(
 			codes.Internal,
 			fmt.Sprintf("error while fetching data from database : %v", err),
@@ -59,11 +59,13 @@ func (*ScheduleServer) FindAllSchedules(ctx context.Context, req *schedulepb.Fin
 		slotsCount := int(int(schedule.End.Sub(schedule.Start).Minutes()) / schedule.Each)
 		//fmt.Println(int(schedule.End.Sub(schedule.Start).Minutes()), slotsCount)
 		for i := 1; i <= slotsCount; i++ {
-			if schedule.Start.Add(time.Duration(i*schedule.Each)*time.Minute).Unix() > req.GetStart().AsTime().Add(24*time.Hour).Unix() {
+			startTime := schedule.Start.Add(time.Duration((i - 1)*schedule.Each) * time.Minute)
+			endTime := schedule.Start.Add(time.Duration(i*schedule.Each) * time.Minute)
+			if (endTime.Unix() > req.GetStart().AsTime().Add(24*time.Hour).Unix()) || (startTime.Unix() < req.GetStart().AsTime().Unix()) {
 				continue
 			}
-			end := timestamppb.New(schedule.Start.Add(time.Duration(i*schedule.Each) * time.Minute))
-			start := timestamppb.New(schedule.Start.Add(time.Duration(i*schedule.Each) * time.Minute).Add(time.Duration(-schedule.Each) * time.Minute))
+			start := timestamppb.New(startTime)
+			end := timestamppb.New(endTime)
 			newSchedule := &schedulepb.Schedule{
 				ConsultantId: int32(schedule.ConsultantID),
 				Period: &schedulepb.Period{

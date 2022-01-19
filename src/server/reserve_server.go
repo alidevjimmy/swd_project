@@ -8,6 +8,7 @@ import (
 	"swd_project/src/db/postgresdb"
 	"swd_project/src/model"
 	"swd_project/src/pbs/reservepb"
+	"time"
 )
 
 type ReserveServer struct {
@@ -41,10 +42,29 @@ func (*ReserveServer) Reserve(ctx context.Context, req *reservepb.ReserveRequest
 			fmt.Sprintf("مشاور یافت نشد"),
 		)
 	}
-	//var reserve = model.Reserve{
-	//	Start:        req.Start,
-	//	UserID:       0,
-	//	ConsultantID: 0,
-	//}
-	return nil, nil
+	var userReserves []model.Reserve
+	if err := postgresdb.DB.Where("consultant_id = ? AND start > ? AND start < ?", req.GetConsultantId(), req.GetStart().AsTime().Add(-24*time.Hour), req.GetStart().AsTime().Add(24*time.Hour)).Find(&userReserves).Error; err != nil {
+		return nil, status.Errorf(
+			codes.Internal,
+			fmt.Sprintf("error while fetching data from database : %v", err),
+		)
+	}
+	if len(userReserves) != 0 {
+		return nil, status.Errorf(
+			codes.FailedPrecondition,
+			fmt.Sprintf("در ۲۴ ساعت فقط یک وقت مشاوره می توانید رزرو کنید"),
+		)
+	}
+	var reserve = model.Reserve{
+		Start:        req.GetStart().AsTime(),
+		UserID:       int(req.GetUserId()),
+		ConsultantID: int(req.GetConsultantId()),
+	}
+	if err := postgresdb.DB.Create(&reserve).Error; err != nil {
+		return nil, status.Errorf(
+			codes.Internal,
+			fmt.Sprintf("خطا هنگام ایجاد رزرو"),
+		)
+	}
+	return &reservepb.ReserveResponse{}, nil
 }
