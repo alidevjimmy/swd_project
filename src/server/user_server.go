@@ -234,6 +234,7 @@ func YellowToRed(user model.User) (bool, error) {
 	}
 	for _, report := range reports {
 		if report.Until.Unix() < time.Now().Unix() {
+			fmt.Println(report.Until, time.Now())
 			user.Status = model.Red
 			if err := postgresdb.DB.Model(&user).Updates(&user); err != nil {
 				return false, status.Errorf(
