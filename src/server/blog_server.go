@@ -30,7 +30,6 @@ func (*BlogServer) FindAll(ctx context.Context, req *blogpb.FindAllRequest) (*bl
 			ImageUrl: v.ImageUrl,
 			Title:    v.Title,
 			Abstract: v.Abstract,
-			Body:     v.Body,
 		})
 	}
 	return &blogpb.FindAllResponse{
@@ -58,6 +57,7 @@ func (*BlogServer) Find(ctx context.Context, req *blogpb.FindRequest) (*blogpb.F
 			ImageUrl: post.ImageUrl,
 			Title:    post.Title,
 			Abstract: post.Abstract,
+			Body:     post.Body,
 		},
 	}, nil
 }
