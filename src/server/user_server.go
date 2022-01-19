@@ -225,25 +225,24 @@ func YellowToRed(user model.User) (bool, error) {
 	if user.Status != model.Yellow {
 		return false, nil
 	}
-	var reports []model.Report
-	if err := postgresdb.DB.Where("user_id = ? AND active = ?", user.ID, true).Find(&reports).Error; err != nil {
+	var report model.Report
+	if err := postgresdb.DB.Where("user_id = ? AND active = ?", user.ID, true).Last(&report).Error; err != nil {
 		return false, status.Errorf(
 			codes.Internal,
 			fmt.Sprintf("خطا هنگاه بروزرسانی وضعیت کاربر"),
 		)
 	}
-	for _, report := range reports {
-		if report.Until.Unix() < time.Now().Unix() {
-			fmt.Println(report.Until, time.Now())
-			user.Status = model.Red
-			if err := postgresdb.DB.Model(&user).Updates(&user); err != nil {
-				return false, status.Errorf(
-					codes.Internal,
-					fmt.Sprintf("خطا هنگاه بروزرسانی وضعیت کاربر"),
-				)
-			}
-			return true, nil
+
+	if report.Until.Unix() < time.Now().Unix() {
+		user.Status = model.Red
+		if err := postgresdb.DB.Model(&user).Updates(&user); err != nil {
+			return false, status.Errorf(
+				codes.Internal,
+				fmt.Sprintf("خطا هنگاه بروزرسانی وضعیت کاربر"),
+			)
 		}
+		return true, nil
 	}
+
 	return false, nil
 }
