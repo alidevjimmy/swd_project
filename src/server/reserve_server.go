@@ -43,7 +43,7 @@ func (*ReserveServer) Reserve(ctx context.Context, req *reservepb.ReserveRequest
 		)
 	}
 	var userReserves []model.Reserve
-	if err := postgresdb.DB.Where("consultant_id = ? AND start > ? AND start < ?", req.GetConsultantId(), req.GetStart().AsTime().Add(-24*time.Hour), req.GetStart().AsTime().Add(24*time.Hour)).Find(&userReserves).Error; err != nil {
+	if err := postgresdb.DB.Where("user_id = ? AND consultant_id = ? AND start > ? AND start < ?", req.GetUserId(), req.GetConsultantId(), req.GetStart().AsTime().Add(-24*time.Hour), req.GetStart().AsTime().Add(24*time.Hour)).Find(&userReserves).Error; err != nil {
 		return nil, status.Errorf(
 			codes.Internal,
 			fmt.Sprintf("error while fetching data from database : %v", err),
