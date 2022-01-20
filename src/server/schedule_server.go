@@ -47,7 +47,7 @@ func (*ScheduleServer) Create(ctx context.Context, req *schedulepb.CreateRequest
 
 func (*ScheduleServer) FindAllSchedules(ctx context.Context, req *schedulepb.FindAllSchedulesRequest) (*schedulepb.FindAllSchedulesResponse, error) {
 	var schedules = []model.Schedule{}
-	if err := postgresdb.DB.Where("consultant_id = ? AND end > ? AND start < ?", req.GetConsultantId(), req.GetStart().AsTime(), req.GetStart().AsTime().Add(24*time.Hour)).Find(&schedules).Error; err != nil {
+	if err := postgresdb.DB.Where("consultant_id = ? AND schedules.end > ? AND start < ?", req.GetConsultantId(), req.GetStart().AsTime(), req.GetStart().AsTime().Add(24*time.Hour)).Find(&schedules).Error; err != nil {
 		return nil, status.Errorf(
 			codes.Internal,
 			fmt.Sprintf("error while fetching data from database : %v", err),
