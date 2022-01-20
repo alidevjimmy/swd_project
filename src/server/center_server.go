@@ -30,7 +30,8 @@ func (*CenterServer) FindAll(ctx context.Context, req *centerpb.FindAllRequest) 
 			Website:   v.Website,
 			Telephone: v.Telephone,
 			Sms:       v.Sms,
-			Address: v.Address,
+			Address:   v.Address,
+			Name:      v.Name,
 		})
 	}
 	return &centerpb.FindAllResponse{
@@ -58,6 +59,8 @@ func (*CenterServer) Find(ctx context.Context, req *centerpb.FindRequest) (*cent
 			Website:   center.Website,
 			Telephone: center.Telephone,
 			Sms:       center.Sms,
+			Address:   center.Address,
+			Name:      center.Name,
 		},
 	}, nil
 }
