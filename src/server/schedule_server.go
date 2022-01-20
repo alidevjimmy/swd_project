@@ -53,7 +53,6 @@ func (*ScheduleServer) FindAllSchedules(ctx context.Context, req *schedulepb.Fin
 			fmt.Sprintf("error while fetching data from database : %v", err),
 		)
 	}
-	fmt.Println(schedules)
 	var resSchedules = []*schedulepb.Schedule{}
 	for _, schedule := range schedules {
 		slotsCount := int(int(schedule.End.Sub(schedule.Start).Minutes()) / schedule.Each)
