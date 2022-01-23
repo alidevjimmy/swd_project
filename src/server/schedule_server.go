@@ -60,7 +60,7 @@ func (*ScheduleServer) FindAllSchedules(ctx context.Context, req *schedulepb.Fin
 		for i := 1; i <= slotsCount; i++ {
 			startTime := schedule.Start.Add(time.Duration((i - 1)*schedule.Each) * time.Minute)
 			endTime := schedule.Start.Add(time.Duration(i*schedule.Each) * time.Minute)
-			if (endTime.Unix() > req.GetStart().AsTime().Add(24*time.Hour).Unix()) || (startTime.Unix() < req.GetStart().AsTime().Unix()) || ( startTime.Unix() < time.Now().Unix()) {
+			if (startTime.Unix() > req.GetStart().AsTime().Add(24*time.Hour).Unix()) || (startTime.Unix() < req.GetStart().AsTime().Unix()) || ( startTime.Unix() < time.Now().Unix()) {
 				continue
 			}
 			start := timestamppb.New(startTime)
